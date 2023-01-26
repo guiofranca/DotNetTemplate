@@ -4,9 +4,9 @@ namespace Template.Domain.Models;
 
 public class User : Model
 {
-    public string Name { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public bool Verified { get; set; }
-    public IEnumerable<Role> Roles { get; set; } = new List<Role>();
+    public required string Name { get; set; }
+    public required string Email { get; set; }
+    public required string Password { get; set; }
+    public required bool Verified { get; set; }
+    public IEnumerable<Role> Roles { get; set; } = Enumerable.Empty<Role>();
 }

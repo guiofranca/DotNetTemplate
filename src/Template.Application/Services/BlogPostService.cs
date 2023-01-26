@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Diagnostics;
 using Template.Application.DTO.BlogPost;
 using Template.Application.DTO.User;
 using Template.Application.Result;
@@ -115,11 +113,11 @@ public class BlogPostService : BaseService<BlogPostModel>
 
     public async Task<IServiceResult<BlogPostModel>> EditAsync(BlogPostRequest blogPostRequest, Guid BlogPostId)
     {
-        var blogPost = new BlogPost() {
-            Id = BlogPostId,
-            Title = blogPostRequest.Title,
-            Content = blogPostRequest.Content,
-        };
+        var blogPost = await _blogPostRepository.FindAsync(BlogPostId);
+        if (blogPost == null) return NotFoundResult("Post not found");
+
+        blogPost.Title = blogPostRequest.Title;
+        blogPost.Content = blogPostRequest.Content;
 
         await _blogPostRepository.UpdateAsync(blogPost);
 
@@ -137,7 +135,9 @@ public class BlogPostService : BaseService<BlogPostModel>
 
     public async Task<IServiceResult<BlogPostModel>> DeleteAsync(Guid id)
     {
-        await _blogPostRepository.DeleteAsync(id);
-        return DeletedResult(null, "Post Deleted");
+        var deleted = await _blogPostRepository.DeleteAsync(id);
+        return deleted 
+            ? DeletedResult(null, "Post Deleted") 
+            : NotFoundResult("Post not found");
     }
 }

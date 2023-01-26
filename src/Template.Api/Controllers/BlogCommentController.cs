@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Template.Api.Controllers.Shared;
 using Template.Application.DTO.BlogComment;
+using Template.Application.DTO.BlogPost;
 using Template.Application.Services;
+using Template.Domain.Interfaces;
 
 namespace Template.Api.Controllers;
 
@@ -13,7 +15,7 @@ public class BlogCommentController : TemplateController
 {
     private readonly BlogCommentService _blogCommentService;
 
-    public BlogCommentController(BlogCommentService blogCommentService)
+    public BlogCommentController(BlogCommentService blogCommentService, IUser user, IErrorNotificator errorNotificator) : base(user, errorNotificator)
     {
         _blogCommentService = blogCommentService;
     }
@@ -33,4 +35,8 @@ public class BlogCommentController : TemplateController
     [HttpPatch("{id:guid}")]
     public async Task<ActionResult<ApiResult<BlogCommentModel>>> Edit(BlogCommentRequest request, Guid id) 
         => ResponseFromServiceResult(await _blogCommentService.EditAsync(request, id));
+
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<ApiResult<BlogCommentModel>>> Delete(Guid id) =>
+        ResponseFromServiceResult(await _blogCommentService.DeleteAsync(id));
 }

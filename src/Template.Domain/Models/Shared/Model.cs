@@ -2,15 +2,11 @@ namespace Template.Domain.Models.Shared;
 
 public partial class Model
 {
-    public Guid Id { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public DateTime CreatedAt { get; init; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
-    public Model() {
-        Id = Guid.NewGuid();
-        CreatedAt = DateTime.Now;
-        UpdatedAt = CreatedAt;
-    }
+    public Model() { }
 
     public Model(Guid id)
     {

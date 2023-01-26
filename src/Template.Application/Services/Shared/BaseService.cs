@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Template.Application.DTO.BlogPost;
 using Template.Application.Result;
 using Template.Domain.Interfaces;
 
@@ -28,7 +27,7 @@ public abstract class BaseService<T> where T : class
     protected IServiceResult<T> FoundResult(T result, string message = "")   => new ServiceResult<T>(result, ServiceResultStatus.Found, message: message);
     protected IServiceResult<TCached> FoundResult<TCached>(TCached result, string message = "") where TCached : class  => new ServiceResult<TCached>(result, ServiceResultStatus.Found, message: message);
     protected IServiceResult<IEnumerable<T>> FoundResult(IEnumerable<T> result, string message = "")   => new ServiceResult<IEnumerable<T>>(result, ServiceResultStatus.Found, message: message);
-    protected IServiceResult<T> NotFoundResult(string message = "")          => new ServiceResult<T>(status: ServiceResultStatus.NotFound, errorMessage: message);
+    protected IServiceResult<T> NotFoundResult(string message = "")          => new ServiceResult<T>(status: ServiceResultStatus.NotFound, message: message);
     protected IServiceResult<T> CreatedResult(T result, string message = "") => new ServiceResult<T>(result, ServiceResultStatus.Created, message: message);
     protected IServiceResult<T> UpdatedResult(T result, string message = "") => new ServiceResult<T>(result, ServiceResultStatus.Updated, message: message);
     protected IServiceResult<T> DeletedResult(T? result = null, string message = "") => new ServiceResult<T>(result, ServiceResultStatus.Deleted, message: message);

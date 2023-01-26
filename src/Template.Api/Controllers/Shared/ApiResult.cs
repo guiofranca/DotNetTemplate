@@ -6,20 +6,20 @@ namespace Template.Api.Controllers.Shared;
 public class ApiResult<T> where T : class
 {
     public HttpStatusCode Status { get; set; }
-    public string? Message { get; set; }
+    public string? Title { get; set; }
     public T? Data { get; set; }
 
-    public ApiResult(T? data = null, HttpStatusCode statusCode = HttpStatusCode.OK, string? message = null)
+    public ApiResult(T? data = null, HttpStatusCode statusCode = HttpStatusCode.OK, string? title = null)
     {
         Data = data;
         Status = statusCode;
-        Message = message;
+        Title = title;
     }
 
-    public ApiResult(IServiceResult<T> serviceResult, HttpStatusCode statusCode = HttpStatusCode.OK, string? message = null)
+    public ApiResult(IServiceResult<T> serviceResult, HttpStatusCode statusCode = HttpStatusCode.OK, string? title = null)
     {
         Data = serviceResult.Data;
         Status = statusCode;
-        Message = message ?? serviceResult.Message;
+        Title = title ?? serviceResult.Message;
     }
 }

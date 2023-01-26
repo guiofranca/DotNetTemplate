@@ -20,16 +20,15 @@ namespace Template.Infrastructure.Cache
             var connection = ConnectionMultiplexer.Connect(connectionString);
             redis = connection.GetDatabase();
 
-            var prefix = configuration["Cache.Prefix"];
-            if (prefix != null) redis.WithKeyPrefix($"{prefix}_");
+            var prefix = configuration["Cache:Prefix"];
+            if (prefix != null) redis = redis.WithKeyPrefix($"{prefix}_");
 
-            var textTtlInMinutes = configuration["Cache.DefaultTtlInMinutes"];
+            var textTtlInMinutes = configuration["Cache:DefaultTtlInMinutes"];
             if (textTtlInMinutes != null)
             {
                 var ttl = double.Parse(textTtlInMinutes);
                 _defaultTtl = TimeSpan.FromMinutes(ttl);
             }
-
         }
 
         public async Task SetAsync<T>(string key, T value, TimeSpan? ttl = null) where T : class
@@ -42,7 +41,7 @@ namespace Template.Infrastructure.Cache
         {
             var content = await redis.StringGetAsync(key);
             if (content.IsNull) return null;
-            T? result = JsonSerializer.Deserialize<T?>(content);
+            T? result = JsonSerializer.Deserialize<T?>(content!);
             return result;
         }
 

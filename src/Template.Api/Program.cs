@@ -49,6 +49,8 @@ app.UseSerilogRequestLogging();
 
 app.ConfigureSwagger();
 
+app.ConfigureExceptionHandler();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

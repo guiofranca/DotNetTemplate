@@ -39,7 +39,7 @@ public class AuthService : BaseService<LoginResponse>
         if (tokenResult.IsError) return FailureResult(tokenResult.Message);
         var model = new LoginResponse 
         { 
-            Token = tokenResult.Data,
+            Token = tokenResult.Data!,
             User = new UserModel 
             { 
                 Id = user.Id,
@@ -62,14 +62,14 @@ public class AuthService : BaseService<LoginResponse>
 
         var salt = BCrypt.Net.BCrypt.GenerateSalt(12);
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password, salt);
-        var user = new User() { Name = registerRequest.Name, Email = registerRequest.Email, Password = passwordHash };
+        var user = new User() { Name = registerRequest.Name, Email = registerRequest.Email, Password = passwordHash, Verified = true };
         await _userRepository.CreateAsync(user);
 
         var tokenResult = await _jwtTokenService.GenerateTokenAsync(user, user.Roles.Select(r => r.Name));
         if (tokenResult.IsError) return FailureResult(tokenResult.Message);
         var model = new LoginResponse
         {
-            Token = tokenResult.Data,
+            Token = tokenResult.Data!,
             User = new UserModel
             {
                 Id = user.Id,
@@ -83,7 +83,7 @@ public class AuthService : BaseService<LoginResponse>
     {
         var userIdResult = _jwtTokenService.GetPropertyFromToken(token, JwtRegisteredClaimNames.Sub);
         if (userIdResult.IsError) return FailureResult(userIdResult.Message);
-        var userId = new Guid(userIdResult.Data);
+        var userId = new Guid(userIdResult.Data!);
         
 
         var user = await _userRepository.FindAsync(userId);
@@ -95,7 +95,7 @@ public class AuthService : BaseService<LoginResponse>
 
         var model = new LoginResponse
         {
-            Token = newTokenResult.Data,
+            Token = newTokenResult.Data!,
             User = new UserModel
             {
                 Id = user.Id,

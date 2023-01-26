@@ -40,7 +40,7 @@ public class BlogCommentService : BaseService<BlogCommentModel>
             CreatedAt = b.CreatedAt,
             UpdatedAt = b.UpdatedAt,
             BlogPostId = b.BlogPostId,
-            User = users.Where(u => u.Id == b.UserId).Select(u => new UserModel() { Name = u.Name, Id= u.Id }).FirstOrDefault()
+            User = users.Where(u => u!.Id == b!.UserId).Select(u => new UserModel() { Name = u!.Name, Id = u!.Id }).FirstOrDefault()!,
         }));
     }
 
@@ -55,7 +55,7 @@ public class BlogCommentService : BaseService<BlogCommentModel>
             Content = b.Content,
             CreatedAt = b.CreatedAt,
             UpdatedAt = b.UpdatedAt,
-            User = users.Where(u => u.Id == b.UserId).Select(u => new UserModel { Id = u.Id, Name = u.Name}).FirstOrDefault(),
+            User = users.Where(u => u.Id == b.UserId).Select(u => new UserModel { Id = u.Id, Name = u.Name}).FirstOrDefault()!,
         });
 
         return FoundResult(models);
@@ -63,6 +63,9 @@ public class BlogCommentService : BaseService<BlogCommentModel>
 
     public async Task<IServiceResult<BlogCommentModel>> GetAsync(Guid id)
     {
+        var cached = await GetFromCache<BlogCommentModel>($"BlogCommentService.GetAsync.{id}");
+        if (cached != null) return FoundResult(cached);
+
         var blogComment = await _blogCommentRepository.FindAsync(id);
         if (blogComment == null) return NotFoundResult("Blog Comment not found");
 
@@ -78,12 +81,14 @@ public class BlogCommentService : BaseService<BlogCommentModel>
         var model = new BlogCommentModel()
         {
             Id = blogComment.Id,
+            BlogPostId = blogComment.BlogPostId,
             Content = blogComment.Content,
             CreatedAt = blogComment.CreatedAt,
             UpdatedAt = blogComment.UpdatedAt,
             User = userModel,
         };
 
+        await _cache.SetAsync($"BlogCommentService.GetAsync.{id}", model);
         return FoundResult(model);
     }
 
@@ -107,7 +112,7 @@ public class BlogCommentService : BaseService<BlogCommentModel>
             Name = user.Name,
         };
 
-        BlogCommentModel blogCommentModel = new()
+        BlogCommentModel model = new()
         {
             Id = blogComment.Id,
             Content = createBlogCommentRequest.Content,
@@ -117,19 +122,19 @@ public class BlogCommentService : BaseService<BlogCommentModel>
             User = userModel,
         };
 
-        return CreatedResult(blogCommentModel);
+        await _cache.SetAsync($"BlogCommentService.GetAsync.{model.Id}", model);
+        return CreatedResult(model);
     }
 
     public async Task<IServiceResult<BlogCommentModel>> EditAsync(BlogCommentRequest blogCommentRequest, Guid BlogCommentId)
     {
-        var blogComment = new BlogComment() {
-            Id = BlogCommentId,
-            BlogPostId = blogCommentRequest.BlogPostId,
-            Content = blogCommentRequest.Content,
-        };
+        var blogComment = await _blogCommentRepository.FindAsync(BlogCommentId);
+        if (blogComment == null) return NotFoundResult("Comment not found");
+
+        blogComment.Content = blogCommentRequest.Content;
 
         await _blogCommentRepository.UpdateAsync(blogComment);
-        blogComment = await _blogCommentRepository.FindAsync(BlogCommentId);
+
 
         var blogCommentModel = new BlogCommentModel() { 
             Id = blogComment.Id,
@@ -141,5 +146,13 @@ public class BlogCommentService : BaseService<BlogCommentModel>
         };
 
         return UpdatedResult(blogCommentModel);
+    }
+
+    public async Task<IServiceResult<BlogCommentModel>> DeleteAsync(Guid id)
+    {
+        var deleted = await _blogCommentRepository.DeleteAsync(id);
+        return deleted 
+            ? DeletedResult(null, "Comment Deleted") 
+            : NotFoundResult("Comment not found");
     }
 }

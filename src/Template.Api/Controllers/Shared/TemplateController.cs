@@ -10,36 +10,14 @@ namespace Template.Api.Controllers.Shared;
 [ApiController]
 public abstract class TemplateController : ControllerBase
 {
-    [FromServices]
     public IUser _user { get; set; }
-
-    [FromServices]
     public IErrorNotificator _errorNotificator { get; set; }
 
-    //protected Guid GetUserId()
-    //{
-    //    return GetUserIdFromJwtToken();
-    //}
-
-    //protected string? GetJwtToken()
-    //{
-    //    var authorizationHeader = Request.Headers.Authorization.FirstOrDefault<string>();
-    //    if (authorizationHeader == null) throw new Exception("Not logged in");
-
-    //    var token = authorizationHeader.Replace("Bearer ", string.Empty);
-    //    return token;
-    //}
-
-    //private Guid GetUserIdFromJwtToken()
-    //{
-    //    var token = GetJwtToken();
-
-    //    var tokenResult = _jwtTokenService.GetPropertyFromToken(token, JwtRegisteredClaimNames.Sub);
-
-    //    var userId = Guid.Parse(tokenResult.Data);
-
-    //    return userId;
-    //}
+    protected TemplateController(IUser user, IErrorNotificator errorNotificator)
+    {
+        _user = user;
+        _errorNotificator = errorNotificator;
+    }
 
     protected ActionResult<ApiResult<T>> ResponseFromServiceResult<T>(IServiceResult<T> serviceResult) where T : class
     {
@@ -56,12 +34,12 @@ public abstract class TemplateController : ControllerBase
         {
             ServiceResultStatus.Ok => Ok(new ApiResult<T>(serviceResult)),
             ServiceResultStatus.Found => Ok(new ApiResult<T>(serviceResult)),
-            ServiceResultStatus.NotFound => NotFound(new ApiResult<T>(serviceResult, HttpStatusCode.NotFound)),
+            ServiceResultStatus.NotFound => Problem(title: serviceResult.Message, statusCode: (int) HttpStatusCode.NotFound),
             ServiceResultStatus.Created => Ok(new ApiResult<T>(serviceResult)),
             ServiceResultStatus.Deleted => Ok(new ApiResult<T>(serviceResult)),
             ServiceResultStatus.Updated => Ok(new ApiResult<T>(serviceResult)),
             ServiceResultStatus.Error => Problem(serviceResult.Message, statusCode: (int) HttpStatusCode.BadRequest),
-            _ => Problem(serviceResult.Message, statusCode: (int)HttpStatusCode.BadRequest),
+            _ => Problem(title: serviceResult.Message, statusCode: (int)HttpStatusCode.BadRequest),
         };
     }
 }
