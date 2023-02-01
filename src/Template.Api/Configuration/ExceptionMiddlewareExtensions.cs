@@ -7,7 +7,7 @@ namespace Template.Api.Configuration;
 
 public static class ExceptionMiddlewareExtensions
 {
-    public static void ConfigureExceptionHandler(this IApplicationBuilder app/*, ILogger<Exception> logger*/)
+    public static void ConfigureExceptionHandler(this IApplicationBuilder app)
     {
         app.UseExceptionHandler(appError =>
         {
@@ -18,12 +18,14 @@ public static class ExceptionMiddlewareExtensions
                 var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                 if (contextFeature != null)
                 {
-                    //logger.LogError($"Something went wrong: {contextFeature.Error}");
                     await context.Response.WriteAsync(JsonSerializer.Serialize(
                         new ProblemDetails()
                         {
                             Status = context.Response?.StatusCode,
                             Title = "Internal Server Error.",
+#if DEBUG
+                            Detail = $"{contextFeature.Error.Message ?? ""} {contextFeature.Error.StackTrace ?? ""}"
+#endif
                         })
                     );
                 }

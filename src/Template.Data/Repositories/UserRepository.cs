@@ -71,8 +71,15 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         throw new NotImplementedException();
     }
 
-    public override Task<User> UpdateAsync(User t)
+    public override async Task<User> UpdateAsync(User t)
     {
-        throw new NotImplementedException();
+        t.Update();
+        await _query.Where(nameof(t.Id), t.Id).UpdateAsync(new
+        {
+            t.Password,
+            t.UpdatedAt,
+        });
+
+        return t;
     }
 }

@@ -10,16 +10,31 @@ public abstract class BaseService<T> where T : class
     protected readonly IErrorNotificator _errorNotificator;
     protected readonly ICacheService _cache;
     protected readonly ILogger _logger;
+    protected readonly IGlobalizer _g;
+    private IUnitOfWork unitOfWork;
+    private IErrorNotificator errorNotificator;
+    private ICacheService cache;
+    private ILogger<AuthService> logger;
 
     protected BaseService(IUnitOfWork unitOfWork,
         IErrorNotificator errorNotificator,
         ICacheService cache,
-        ILogger logger)
+        ILogger logger,
+        IGlobalizer globalizer)
     {
         _unitOfWork = unitOfWork;
         _errorNotificator = errorNotificator;
         _cache = cache;
         _logger = logger;
+        _g = globalizer;
+    }
+
+    protected BaseService(IUnitOfWork unitOfWork, IErrorNotificator errorNotificator, ICacheService cache, ILogger<AuthService> logger)
+    {
+        this.unitOfWork = unitOfWork;
+        this.errorNotificator = errorNotificator;
+        this.cache = cache;
+        this.logger = logger;
     }
 
     protected IServiceResult<T> OkResult(T result, string message = "")   => new ServiceResult<T>(result, ServiceResultStatus.Ok, message: message);

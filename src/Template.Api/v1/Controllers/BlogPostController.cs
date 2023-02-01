@@ -1,23 +1,27 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Template.Api.Controllers.Shared;
+using Template.Api.v1.Controllers.Shared;
 using Template.Application.DTO.BlogComment;
 using Template.Application.DTO.BlogPost;
 using Template.Application.Services;
+using Template.Domain.Interfaces;
 
-namespace Template.Api.Controllers;
+namespace Template.Api.v1.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 [Authorize(AuthenticationSchemes = "Bearer")]
-public class BlogPostController : TemplateController
+public class BlogPostController : V1Controller
 {
     public ILogger<BlogPostController> _logger;
 
     private readonly BlogPostService _blogPostService;
     private readonly BlogCommentService _blogCommentService;
 
-    public BlogPostController(BlogPostService blogPostService, ILogger<BlogPostController> logger, BlogCommentService blogCommentService)
+    public BlogPostController(BlogPostService blogPostService,
+        ILogger<BlogPostController> logger,
+        BlogCommentService blogCommentService,
+        IUser user,
+        IErrorNotificator errorNotificator) : base(user, errorNotificator)
     {
         _blogPostService = blogPostService;
         _logger = logger;
@@ -37,7 +41,7 @@ public class BlogPostController : TemplateController
         ResponseFromServiceResult(await _blogCommentService.GetAllFromPost(id));
 
     [HttpPost("")]
-    public async Task<ActionResult<ApiResult<BlogPostModel>>> Create(BlogPostRequest request) => 
+    public async Task<ActionResult<ApiResult<BlogPostModel>>> Create(BlogPostRequest request) =>
         ResponseFromServiceResult(await _blogPostService.CreateAsync(request, _user.Id));
 
     [HttpPatch("{id:guid}")]

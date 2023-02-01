@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Template.Api.Controllers.Shared;
+using Template.Api.v1.Controllers.Shared;
 using Template.Application.DTO.BlogComment;
 using Template.Application.DTO.BlogPost;
 using Template.Application.Services;
 using Template.Domain.Interfaces;
 
-namespace Template.Api.Controllers;
+namespace Template.Api.v1.Controllers;
 
 [ApiController]
-[Route("[controller]")]
 [Authorize(AuthenticationSchemes = "Bearer")]
-public class BlogCommentController : TemplateController
+public class BlogCommentController : V1Controller
 {
     private readonly BlogCommentService _blogCommentService;
 
@@ -21,19 +20,19 @@ public class BlogCommentController : TemplateController
     }
 
     [HttpGet("")]
-    public async Task<ActionResult<ApiResult<IEnumerable<BlogCommentModel>>>> Index() 
+    public async Task<ActionResult<ApiResult<IEnumerable<BlogCommentModel>>>> Index()
         => ResponseFromServiceResult(await _blogCommentService.GetAllAsync());
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ApiResult<BlogCommentModel>>> Get(Guid id) 
+    public async Task<ActionResult<ApiResult<BlogCommentModel>>> Get(Guid id)
         => ResponseFromServiceResult(await _blogCommentService.GetAsync(id));
 
     [HttpPost("")]
-    public async Task<ActionResult<ApiResult<BlogCommentModel>>> Create(BlogCommentRequest request) 
+    public async Task<ActionResult<ApiResult<BlogCommentModel>>> Create(BlogCommentRequest request)
         => ResponseFromServiceResult(await _blogCommentService.CreateAsync(request, _user.Id));
 
     [HttpPatch("{id:guid}")]
-    public async Task<ActionResult<ApiResult<BlogCommentModel>>> Edit(BlogCommentRequest request, Guid id) 
+    public async Task<ActionResult<ApiResult<BlogCommentModel>>> Edit(BlogCommentRequest request, Guid id)
         => ResponseFromServiceResult(await _blogCommentService.EditAsync(request, id));
 
     [HttpDelete("{id:guid}")]

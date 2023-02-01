@@ -1,4 +1,5 @@
-﻿using Template.Domain.Models.Shared;
+﻿using Template.Domain.Interfaces;
+using Template.Domain.Models.Shared;
 
 namespace Template.Domain.Models;
 

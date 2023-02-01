@@ -1,8 +1,8 @@
-﻿using BCrypt.Net;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using Template.Application.DTO.Auth;
 using Template.Application.DTO.User;
+using Template.Application.Interfaces;
 using Template.Application.Result;
 using Template.Application.Services.Shared;
 using Template.Domain.Interfaces;
@@ -14,14 +14,15 @@ namespace Template.Application.Services;
 public class AuthService : BaseService<LoginResponse>
 {
     private readonly IUserRepository _userRepository;
-    private readonly JwtTokenService _jwtTokenService;
+    private readonly IJwtTokenService _jwtTokenService;
 
     public AuthService(IUserRepository userRepository,
-        JwtTokenService jwtTokenService,
+        IJwtTokenService jwtTokenService,
         IUnitOfWork unitOfWork,
         IErrorNotificator errorNotificator,
         ICacheService _cache,
-        ILogger<AuthService> logger) : base(unitOfWork, errorNotificator, _cache, logger)
+        ILogger<AuthService> logger,
+        IGlobalizer globalizer) : base(unitOfWork, errorNotificator, _cache, logger, globalizer)
     {
         _userRepository = userRepository;
         _jwtTokenService = jwtTokenService;
@@ -32,7 +33,11 @@ public class AuthService : BaseService<LoginResponse>
         var user = await _userRepository.GetByEmail(loginRequest.Email);
         if (user == null) return FailureResult("Credentials does not match our records.");
         var success = BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password);
-        if (!success) return NotFoundResult("Credentials does not match our records.");
+        if (!success) return FailureResult("Credentials does not match our records.");
+
+        //ReHashPass
+        user.Password = HashPassword(loginRequest.Password);
+        await _userRepository.UpdateAsync(user);
 
         user.Roles = await _userRepository.GetRolesAsync(user);
         var tokenResult = await _jwtTokenService.GenerateTokenAsync(user, user.Roles.Select(r => r.Name));
@@ -60,10 +65,9 @@ public class AuthService : BaseService<LoginResponse>
     public async Task<IServiceResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
 
-        var salt = BCrypt.Net.BCrypt.GenerateSalt(12);
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password, salt);
+        var passwordHash = HashPassword(registerRequest.Password);
         var user = new User() { Name = registerRequest.Name, Email = registerRequest.Email, Password = passwordHash, Verified = true };
-        await _userRepository.CreateAsync(user);
+        await _cache.RememberModelAsync(user, _userRepository.CreateAsync);
 
         var tokenResult = await _jwtTokenService.GenerateTokenAsync(user, user.Roles.Select(r => r.Name));
         if (tokenResult.IsError) return FailureResult(tokenResult.Message);
@@ -86,7 +90,7 @@ public class AuthService : BaseService<LoginResponse>
         var userId = new Guid(userIdResult.Data!);
         
 
-        var user = await _userRepository.FindAsync(userId);
+        var user = await _cache.RememberModelAsync(userId, _userRepository.FindAsync);
         if (user == null) return NotFoundResult("User not found");
 
         user.Roles = await _userRepository.GetRolesAsync(user);
@@ -103,5 +107,11 @@ public class AuthService : BaseService<LoginResponse>
             }
         };
         return FoundResult(model);
+    }
+
+    private string HashPassword(string password)
+    {
+        var salt = BCrypt.Net.BCrypt.GenerateSalt(12);
+        return BCrypt.Net.BCrypt.HashPassword(password, salt);
     }
 }

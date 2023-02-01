@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Template.Application.Interfaces;
 using Template.Application.Result;
 using Template.Application.Services.Shared;
 using Template.Domain.Interfaces;
@@ -11,7 +12,7 @@ using Template.Domain.Models;
 
 namespace Template.Application.Services;
 
-public class JwtTokenService : BaseService<string>
+public class JwtTokenService : BaseService<string>, IJwtTokenService
 {
     private byte[] Secret { get; set; }
     private int TokenExpirationInMinutes { get; set; }
@@ -25,14 +26,15 @@ public class JwtTokenService : BaseService<string>
         IUnitOfWork unitOfWork,
         ICacheService cache,
         IErrorNotificator errorNotificator,
-        ILogger<JwtTokenService> logger) : base(unitOfWork, errorNotificator, cache, logger)
+        ILogger<JwtTokenService> logger,
+        IGlobalizer globalizer) : base(unitOfWork, errorNotificator, cache, logger, globalizer)
     {
         var jwtSecret = config["JWT:Secret"];
         var jwtTokenExpiration = config["JWT:TokenExpirationInMinutes"];
         var jwtRefreshExpiration = config["JWT:RefreshTokenExpiryInDays"];
-        if (jwtSecret == null) throw new ArgumentNullException("appSettings.JWT.Secret");
-        if (jwtTokenExpiration == null) throw new ArgumentNullException("appSettings.JWT.TokenExpirationInMinutes");
-        if (jwtRefreshExpiration == null) throw new ArgumentNullException("appSettings.JWT.RefreshTokenExpiryInDays");
+        if (jwtSecret == null) throw new ArgumentNullException("appSettings:JWT:Secret");
+        if (jwtTokenExpiration == null) throw new ArgumentNullException("appSettings:JWT:TokenExpirationInMinutes");
+        if (jwtRefreshExpiration == null) throw new ArgumentNullException("appSettings:JWT:RefreshTokenExpiryInDays");
 
         Secret = Encoding.UTF8.GetBytes(jwtSecret);
         TokenExpirationInMinutes = int.Parse(jwtTokenExpiration);
@@ -77,17 +79,17 @@ public class JwtTokenService : BaseService<string>
     private async Task<IServiceResult<string>> CheckIfTokenIsAbleToRefresh(string? oldToken)
     {
         if (oldToken is null) return OkResult("Fresh token generation");
-        
+
         var oldJtiResult = GetPropertyFromToken(oldToken, JwtRegisteredClaimNames.Jti);
         if (oldJtiResult.IsError) return FailureResult(oldJtiResult.Message);
 
         var isValid = await _cache.GetStringAsync($"{JwtRegisteredClaimNames.Jti}.{oldJtiResult.Data}");
         await _cache.RemoveKey($"{JwtRegisteredClaimNames.Jti}.{oldJtiResult.Data}");
-        if (isValid is null) return FailureResult("This token can no longer be refreshed. Login again.");
-        return OkResult("Token valid");
+        if (isValid is null) return FailureResult(_g["This token can no longer be refreshed. Login again."]);
+        return OkResult(_g["Token valid"]);
     }
 
-    public async Task<string> GenerateJtiAsync()
+    private async Task<string> GenerateJtiAsync()
     {
         var jti = Guid.NewGuid().ToString();
         await _cache.SetStringAsync($"{JwtRegisteredClaimNames.Jti}.{jti}", "valid", TimeSpan.FromDays(RefreshTokenExpiryInDays));
@@ -96,7 +98,7 @@ public class JwtTokenService : BaseService<string>
 
     public IServiceResult<string> GetPropertyFromToken(string? token, string claim)
     {
-        if (token is null) return FailureResult("Please provide a Bearer token");
+        if (token is null) return FailureResult(_g["Please provide a Bearer token"]);
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,
@@ -119,18 +121,18 @@ public class JwtTokenService : BaseService<string>
             if (securityToken is not JwtSecurityToken jwtSecurityToken
                 || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
-                return FailureResult("Invalid token");
+                return FailureResult(_g["Invalid token"]);
             }
 
         }
         catch (Exception)
         {
-            return FailureResult("Invalid token");
+            return FailureResult(_g["Invalid token"]);
         }
 
         if (!principal.HasClaim(c => c.Type == claim))
         {
-            return FailureResult("Invalid token");
+            return FailureResult(_g["Invalid token"]);
         }
 
         var value = principal.Claims.First(c => c.Type == claim).Value;
@@ -142,7 +144,7 @@ public class JwtTokenService : BaseService<string>
         var jtiResult = GetPropertyFromToken(token, JwtRegisteredClaimNames.Jti);
         if (jtiResult.IsError) return FailureResult(jtiResult.Message);
         await _cache.RemoveKey($"{JwtRegisteredClaimNames.Jti}.{jtiResult.Data}");
-        return OkResult("Logged out");
+        return OkResult(_g["Logged out"]);
     }
 }
 

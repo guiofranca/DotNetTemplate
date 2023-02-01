@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Template.Application.Interfaces;
 using Template.Application.Services;
 using Template.Domain.Interfaces;
 
@@ -7,7 +8,7 @@ namespace Template.Api.Configuration;
 public class AspNetUser : IUser
 {
     private readonly IHttpContextAccessor _httpAcessor;
-    private readonly JwtTokenService _jwt;
+    private readonly IJwtTokenService _jwt;
 
     public Guid Id => GetUserIdFromJwtToken();
 
@@ -15,7 +16,7 @@ public class AspNetUser : IUser
 
     public string? Token => GetJwtToken();
 
-    public AspNetUser(IHttpContextAccessor httpAcessor, JwtTokenService jwt)
+    public AspNetUser(IHttpContextAccessor httpAcessor, IJwtTokenService jwt)
     {
         _httpAcessor = httpAcessor;
         _jwt = jwt;
@@ -40,13 +41,14 @@ public class AspNetUser : IUser
         var token = GetJwtToken();
         if(token is null) return Guid.Empty;
         var tokenResult = _jwt.GetPropertyFromToken(token, JwtRegisteredClaimNames.Sub);
-        var userId = Guid.Parse(tokenResult.Data);
+        if(tokenResult.IsError) return Guid.Empty;
+        var userId = Guid.Parse(tokenResult.Data!);
         return userId;
     }
 
     private bool CheckAuthStatus()
     {
-        var auth = _httpAcessor.HttpContext.User.Identity?.IsAuthenticated;
+        var auth = _httpAcessor.HttpContext?.User.Identity?.IsAuthenticated;
         return auth ?? false;
     }
 }

@@ -19,7 +19,8 @@ public class BlogPostService : BaseService<BlogPostModel>
         IUnitOfWork unitOfWork,
         IErrorNotificator errorNotificator,
         ICacheService cache,
-        ILogger<BlogPostService> logger) : base(unitOfWork, errorNotificator, cache, logger)
+        ILogger<BlogPostService> logger,
+        IGlobalizer globalizer) : base(unitOfWork, errorNotificator, cache, logger, globalizer)
     {
         _blogPostRepository = blogPostRepository;
         _userRepository = userRepository;
@@ -31,7 +32,7 @@ public class BlogPostService : BaseService<BlogPostModel>
         if (cached != null) return FoundResult(cached);
 
         var blogPosts = await _blogPostRepository.FindAllAsync();
-        var users = await _userRepository.FindAsync(blogPosts.Select(b => b.UserId).ToArray());
+        var users = await _userRepository.FindAsync(blogPosts.Select(b => b.UserId).Distinct().ToArray());
 
         var models = blogPosts.Select(b => new BlogPostModel()
         {
@@ -43,20 +44,16 @@ public class BlogPostService : BaseService<BlogPostModel>
             User = users.Where(u => u.Id == b.UserId).Select(u => new UserModel { Id = u.Id, Name = u.Name}).FirstOrDefault(),
         });
 
-        await _cache.SetAsync("BlogPostService.GetAllAsync", models);
         return FoundResult(models);
     }
 
     public async Task<IServiceResult<BlogPostModel>> GetAsync(Guid id)
     {
-        var cached = await GetFromCache<BlogPostModel>($"BlogPostService.GetAsync.{id}");
-        if (cached != null) return FoundResult(cached);
+        var blogPost = await _cache.RememberModelAsync(id, _blogPostRepository.FindAsync);
+        if (blogPost == null) return NotFoundResult(_g["Blog Post not found"]);
 
-        var blogPost = await _blogPostRepository.FindAsync(id);
-        if (blogPost == null) return NotFoundResult("Blog Post not found");
-
-        User? user = await _userRepository.FindAsync(blogPost.UserId);
-        if (user is null) return FailureResult("User not found");
+        User? user = await _cache.RememberModelAsync(blogPost.UserId, _userRepository.FindAsync);
+        if (user is null) return FailureResult(_g["User not found"]);
 
         UserModel userModel = new()
         {
@@ -80,8 +77,8 @@ public class BlogPostService : BaseService<BlogPostModel>
 
     public async Task<IServiceResult<BlogPostModel>> CreateAsync(BlogPostRequest createBlogPostRequest, Guid UserId)
     {
-        User? user = await _userRepository.FindAsync(UserId);
-        if (user is null) return FailureResult("User not found");
+        User? user = await _cache.RememberModelAsync(UserId, _userRepository.FindAsync);
+        if (user is null) return FailureResult(_g["User not found"]);
 
         BlogPost blogPost = new()
         {
@@ -89,7 +86,7 @@ public class BlogPostService : BaseService<BlogPostModel>
             Content = createBlogPostRequest.Content,
             UserId = UserId
         };
-        await _blogPostRepository.CreateAsync(blogPost);
+        await _cache.RememberModelAsync(blogPost, _blogPostRepository.CreateAsync);
 
         UserModel userModel = new()
         {
@@ -107,19 +104,18 @@ public class BlogPostService : BaseService<BlogPostModel>
             User = userModel,
         };
 
-        await _cache.RemoveKey("BlogPostService.GetAllAsync");
         return CreatedResult(blogPostModel);
     }
 
     public async Task<IServiceResult<BlogPostModel>> EditAsync(BlogPostRequest blogPostRequest, Guid BlogPostId)
     {
-        var blogPost = await _blogPostRepository.FindAsync(BlogPostId);
-        if (blogPost == null) return NotFoundResult("Post not found");
+        var blogPost = await _cache.RememberModelAsync(BlogPostId, _blogPostRepository.FindAsync);
+        if (blogPost == null) return NotFoundResult(_g["Blog Post not found"]);
 
         blogPost.Title = blogPostRequest.Title;
         blogPost.Content = blogPostRequest.Content;
 
-        await _blogPostRepository.UpdateAsync(blogPost);
+        await _cache.RememberModelAsync(blogPost, _blogPostRepository.UpdateAsync);
 
         var blogPostModel = new BlogPostModel() { 
             Id = blogPost.Id,
@@ -129,15 +125,16 @@ public class BlogPostService : BaseService<BlogPostModel>
             UpdatedAt = blogPost.UpdatedAt,
         };
 
-        await _cache.RemoveKey($"BlogPostService.GetAsync.{BlogPostId}");
         return UpdatedResult(blogPostModel);
     }
 
     public async Task<IServiceResult<BlogPostModel>> DeleteAsync(Guid id)
     {
+        var cacheKey = $"{typeof(BlogPost).Name}.{id}";
         var deleted = await _blogPostRepository.DeleteAsync(id);
+        await _cache.RemoveKey(cacheKey);
         return deleted 
-            ? DeletedResult(null, "Post Deleted") 
-            : NotFoundResult("Post not found");
+            ? DeletedResult(null, _g["Blog Post Deleted"]) 
+            : NotFoundResult(_g["Blog Post not found"]);
     }
 }

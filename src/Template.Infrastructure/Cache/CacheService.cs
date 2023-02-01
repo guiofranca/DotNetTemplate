@@ -4,6 +4,7 @@ using StackExchange.Redis;
 using StackExchange.Redis.KeyspaceIsolation;
 using System.Text.Json;
 using Template.Domain.Interfaces;
+using Template.Domain.Models.Shared;
 
 namespace Template.Infrastructure.Cache
 {
@@ -50,6 +51,34 @@ namespace Template.Infrastructure.Cache
         public async Task<string?> GetStringAsync(string key) => await redis.StringGetAsync(key);
 
         public async Task RemoveKey(string key) => await redis.KeyDeleteAsync(key);
+
+        public async Task<T?> RememberModelAsync<T>(Guid id, Func<Guid, Task<T?>> action) where T : class
+        {
+            var key = $"{typeof(T).Name}.{id}";
+            var cached = await GetAsync<T>(key);
+            _logger.LogDebug($"Fetched from cache! {key}");
+            if(cached != null) return cached;
+
+            T? fetch = await action(id);
+            if(fetch == null) return fetch;
+
+            await SetAsync<T>(key, fetch);
+            _logger.LogDebug($"Cached! {key}");
+
+            return fetch;
+        }
+
+        public async Task<T> RememberModelAsync<T>(T model, Func<T, Task<T>> action) where T : Model
+        {
+            var key = $"{typeof(T).Name}.{model.Id}";
+            
+            await action(model);
+
+            await SetAsync<T>(key, model);
+            _logger.LogDebug($"Cached! {key}");
+
+            return model;
+        }
 
         private TimeSpan GetTtl(TimeSpan? ttl) => ttl ?? _defaultTtl;
     }
