@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.MigrationRunner", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Application", "src\Template.Application\Template.Application.csproj", "{F5D904EC-50E3-4CC8-9356-221E541DACFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Infrastructure", "src\Template.Infrastructure\Template.Infrastructure.csproj", "{291D52A8-B48E-45F7-837B-F5DBF99FDDC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Infrastructure", "src\Template.Infrastructure\Template.Infrastructure.csproj", "{291D52A8-B48E-45F7-837B-F5DBF99FDDC4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{759BBDD3-B3EE-4787-A22C-5EBFEE15E1D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

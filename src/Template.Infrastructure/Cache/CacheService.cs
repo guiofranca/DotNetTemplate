@@ -56,14 +56,14 @@ namespace Template.Infrastructure.Cache
         {
             var key = $"{typeof(T).Name}.{id}";
             var cached = await GetAsync<T>(key);
-            _logger.LogDebug($"Fetched from cache! {key}");
+            _logger.LogDebug("Fetched from cache! {key}", key);
             if(cached != null) return cached;
 
             T? fetch = await action(id);
             if(fetch == null) return fetch;
 
             await SetAsync<T>(key, fetch);
-            _logger.LogDebug($"Cached! {key}");
+            _logger.LogDebug("Cached! {key}", key);
 
             return fetch;
         }
@@ -75,7 +75,7 @@ namespace Template.Infrastructure.Cache
             await action(model);
 
             await SetAsync<T>(key, model);
-            _logger.LogDebug($"Cached! {key}");
+            _logger.LogDebug("Cached! {key}", key);
 
             return model;
         }

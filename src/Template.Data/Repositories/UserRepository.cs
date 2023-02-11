@@ -61,14 +61,26 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         return roles;
     }
 
-    public Task<bool> AddRoleAsync(User user, Role role)
+    public async Task<bool> AddRoleAsync(User user, Role role)
     {
-        throw new NotImplementedException();
+        var affected = await _db.Query(UserRoleTable).InsertAsync(new
+        {
+            UserId = user.Id,
+            RoleId = role.Id,
+            CreatedAt = DateTime.Now,
+        });
+
+        return affected > 0;
     }
 
-    public Task<bool> RemoveRoleAsync(User user, Role role)
+    public async Task<bool> RemoveRoleAsync(User user, Role role)
     {
-        throw new NotImplementedException();
+        var affected = await _db.Query(UserRoleTable)
+            .Where("UserId", user.Id)
+            .Where("RoleId", role.Id)
+            .DeleteAsync();
+
+        return affected > 0;
     }
 
     public override async Task<User> UpdateAsync(User t)
@@ -76,6 +88,8 @@ public class UserRepository : BaseRepository<User>, IUserRepository
         t.Update();
         await _query.Where(nameof(t.Id), t.Id).UpdateAsync(new
         {
+            t.Name,
+            t.Email,
             t.Password,
             t.UpdatedAt,
         });

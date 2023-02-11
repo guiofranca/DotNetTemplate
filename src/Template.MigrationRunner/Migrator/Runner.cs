@@ -1,16 +1,27 @@
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.Text.Json.Serialization;
 
 namespace Template.MigrationRunner.Migrator;
 
 public class Runner
 {
-    private readonly IConfiguration _configuration;
+    private string DatabaseType;
+    private string ConnectionString;
 
     public Runner(IConfiguration configuration)
     {
-        _configuration = configuration;
+        var configuredDatabaseType = configuration["DatabaseType"];
+        if(configuredDatabaseType == null) throw new ArgumentNullException("DatabaseType");
+        DatabaseType = configuredDatabaseType;
+
+        var connectionStringKey = $"ConnectionStrings:{configuredDatabaseType}";
+        var configuredConnectionString = configuration[connectionStringKey];
+        if (configuredConnectionString == null) throw new ArgumentNullException(connectionStringKey);
+        ConnectionString = configuredConnectionString;
     }
 
     public void ExecuteOption(MigratorSelect migratorSelect, long version = 0, int rollback = 0) {
@@ -22,14 +33,20 @@ public class Runner
     }
     private ServiceProvider CreateServices()
     {
-        return new ServiceCollection()
+        var provider = new ServiceCollection()
             .AddFluentMigratorCore()
-            .ConfigureRunner(rb => rb
-                .AddMySql5()
-                .WithGlobalConnectionString(_configuration.GetConnectionString("Default"))
-                .ScanIn(typeof(Runner).Assembly).For.Migrations())
-            .AddLogging(lb => lb.AddFluentMigratorConsole())
-            .BuildServiceProvider(false);
+            .ConfigureRunner(rb => {
+                if (DatabaseType == "MySql") rb.AddMySql5();
+                else if (DatabaseType == "Postgres") rb.AddPostgres();
+                else if (DatabaseType == "SQLite") rb.AddSQLite();
+                else throw new Exception($"Unknown DatabaseType {DatabaseType}");
+
+                rb.WithGlobalConnectionString(ConnectionString)
+                    .ScanIn(typeof(Runner).Assembly).For.Migrations();
+            })
+            .AddLogging(lb => lb.AddFluentMigratorConsole());
+            
+        return provider.BuildServiceProvider(false);
     }
 
     private void UpdateDatabase(IServiceProvider serviceProvider, MigratorSelect migratorSelect, long version = 0, int rollback = 0)

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Template.Application.Resources;
 using Template.Domain.Interfaces;
 
 namespace Template.Api.v2.Controllers;
@@ -10,14 +8,14 @@ namespace Template.Api.v2.Controllers;
 [Route("api/v{v:apiVersion}/example")]
 public class ExampleV2Controller : ControllerBase
 {
-    private readonly IGlobalizer _strings;
-    public ExampleV2Controller(IGlobalizer strings)
+    private readonly IGlobalizer _g;
+
+    public ExampleV2Controller(IGlobalizer g)
     {
-        _strings = strings;
+        _g = g;
     }
 
     [HttpGet("")]
     public ActionResult<string> Index()
-        => Ok(_strings["Agora só em português"]);
-
+        => Ok(_g["This is the API Version 2"]);
 }

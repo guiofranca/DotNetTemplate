@@ -25,9 +25,8 @@ public class CreateUserRoleTable : Migration
             .ToTable(TableName.Of<User>()).PrimaryColumn("Id")
             .OnDelete(System.Data.Rule.Cascade);
 
-        Create.Index().OnTable(TABLE_NAME)
-            .OnColumn("UserId").Ascending()
-            .OnColumn("RoleId").Ascending();
+        Create.UniqueConstraint().OnTable(TABLE_NAME)
+            .Columns("UserId", "RoleId");
     }
 
     public override void Down()

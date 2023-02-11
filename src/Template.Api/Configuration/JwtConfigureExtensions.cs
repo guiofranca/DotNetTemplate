@@ -29,8 +29,6 @@ public static class JwtConfigureExtensions
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromDays(0),
                 RequireExpirationTime = true,
-                RoleClaimType = "roles", //https://docs.microsoft.com/en-us/aspnet/core/security/authentication/claims?view=aspnetcore-6.0
-                //NameClaimType = "sub", //does not work. Why? :(
             };
         }).Services;
 }

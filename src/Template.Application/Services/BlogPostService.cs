@@ -29,7 +29,7 @@ public class BlogPostService : BaseService<BlogPostModel>
     public async Task<IServiceResult<IEnumerable<BlogPostModel>>> GetAllAsync()
     {
         var cached = await GetFromCache<IEnumerable<BlogPostModel>>("BlogPostService.GetAllAsync");
-        if (cached != null) return FoundResult(cached);
+        if (cached != null) return OkResult(cached);
 
         var blogPosts = await _blogPostRepository.FindAllAsync();
         var users = await _userRepository.FindAsync(blogPosts.Select(b => b.UserId).Distinct().ToArray());
@@ -44,7 +44,7 @@ public class BlogPostService : BaseService<BlogPostModel>
             User = users.Where(u => u.Id == b.UserId).Select(u => new UserModel { Id = u.Id, Name = u.Name}).FirstOrDefault(),
         });
 
-        return FoundResult(models);
+        return OkResult(models);
     }
 
     public async Task<IServiceResult<BlogPostModel>> GetAsync(Guid id)
@@ -72,7 +72,7 @@ public class BlogPostService : BaseService<BlogPostModel>
         };
 
         await _cache.SetAsync($"BlogPostService.GetAsync.{id}", model);
-        return FoundResult(model);
+        return OkResult(model);
     }
 
     public async Task<IServiceResult<BlogPostModel>> CreateAsync(BlogPostRequest createBlogPostRequest, Guid UserId)

@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.Extensions.Options;
 using Serilog;
 using Template.Api.Configuration;
 using Template.Application.Services;
@@ -10,11 +7,10 @@ using Template.Domain.Interfaces;
 using Template.Domain.Interfaces.Repositories;
 using Template.Infrastructure.Cache;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.Localization;
-using System.Globalization;
 using Template.Application.Interfaces;
 using Template.Application.Resources;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Template.Infrastructure.FileStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,19 +48,28 @@ builder.Host.UseSerilog();
 
 
 //IoC
-builder.Services.AddScoped<IDbSession, MySqlSession>();
+//builder.Services.AddScoped<IDbSession, MySqlSession>();
+builder.Services.AddScoped<IDbSession, PostgresSession>();
+//builder.Services.AddScoped<IDbSession, SQLiteSession>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
 builder.Services.AddScoped<IBlogCommentRepository, BlogCommentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IErrorNotificator, ErrorNotificator>();
 builder.Services.AddScoped<ICacheService, CacheService>();
-//builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IUser, AspNetUser>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<BlogPostService>();
 builder.Services.AddScoped<BlogCommentService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<RoleService>();
+builder.Services.AddScoped<StoredFileService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProfileService>();
+builder.Services.AddScoped<IFileStorage, FileSystemStorage>();
+builder.Services.AddScoped<IStoredFileRepository, StoredFileRepository>();
 builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 builder.Services.AddSingleton<IGlobalizer, Globalizer>();
 

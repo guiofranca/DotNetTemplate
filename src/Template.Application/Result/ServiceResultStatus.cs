@@ -3,7 +3,6 @@
 public enum ServiceResultStatus
 {
     Ok,
-    Found,
     NotFound,
     Created,
     Deleted,

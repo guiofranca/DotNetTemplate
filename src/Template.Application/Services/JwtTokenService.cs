@@ -60,6 +60,7 @@ public class JwtTokenService : BaseService<string>, IJwtTokenService
         foreach (var role in roles)
         {
             claims.Add(new Claim("roles", role));
+            claims.Add(new Claim("roles", role));
         }
 
         var header = new JwtHeader(

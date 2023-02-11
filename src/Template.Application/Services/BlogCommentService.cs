@@ -15,14 +15,10 @@ public class BlogCommentService : BaseService<BlogCommentModel>
     private readonly IBlogPostRepository _blogPostRepository;
     private readonly IUserRepository _userRepository;
 
-    public BlogCommentService(IBlogCommentRepository blogCommentRepository,
-        IUserRepository userRepository,
-        IBlogPostRepository blogPostRepository,
-        IUnitOfWork unitOfWork,
-        IErrorNotificator errorNotificator,
-        ICacheService _cache,
-        ILogger<AuthService> logger,
-        IGlobalizer globalizer) : base(unitOfWork, errorNotificator, _cache, logger, globalizer)
+    public BlogCommentService(IBlogCommentRepository blogCommentRepository, IUserRepository userRepository,
+                              IBlogPostRepository blogPostRepository, IUnitOfWork unitOfWork,
+                              IErrorNotificator errorNotificator, ICacheService _cache, ILogger<AuthService> logger,
+                              IGlobalizer globalizer) : base(unitOfWork, errorNotificator, _cache, logger, globalizer)
     {
         _blogCommentRepository = blogCommentRepository;
         _userRepository = userRepository;
@@ -34,7 +30,7 @@ public class BlogCommentService : BaseService<BlogCommentModel>
         var blogComments = await _blogCommentRepository.CommentsFromPost(postId);
         var users = await _userRepository.FindAsync(blogComments.Select(b => b.UserId).Distinct().ToArray());
 
-        return FoundResult(blogComments.Select(b => new BlogCommentModel 
+        return OkResult(blogComments.Select(b => new BlogCommentModel 
         { 
             Id = b.Id,
             Content = b.Content,
@@ -59,12 +55,11 @@ public class BlogCommentService : BaseService<BlogCommentModel>
             User = users.Where(u => u.Id == b.UserId).Select(u => new UserModel { Id = u.Id, Name = u.Name}).FirstOrDefault()!,
         });
 
-        return FoundResult(models);
+        return OkResult(models);
     }
 
     public async Task<IServiceResult<BlogCommentModel>> GetAsync(Guid id)
     {
-        throw new Exception("Deu ruim");
         var blogComment = await _cache.RememberModelAsync(id, _blogCommentRepository.FindAsync);
         if (blogComment == null) return NotFoundResult(_g["Blog Comment not found"]);
 
@@ -87,7 +82,7 @@ public class BlogCommentService : BaseService<BlogCommentModel>
             User = userModel,
         };
 
-        return FoundResult(model);
+        return OkResult(model);
     }
 
     public async Task<IServiceResult<BlogCommentModel>> CreateAsync(BlogCommentRequest createBlogCommentRequest, Guid UserId)

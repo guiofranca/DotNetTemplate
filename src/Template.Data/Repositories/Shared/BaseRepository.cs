@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Dapper;
+using Microsoft.Extensions.Logging;
+using SQLitePCL;
 using SqlKata;
 using SqlKata.Compilers;
 using SqlKata.Execution;
+using Template.Data.Contexts;
 using Template.Domain.Interfaces;
 using Template.Domain.Interfaces.Repositories.Shared;
 using Template.Domain.Models.Shared;
@@ -19,7 +22,12 @@ public abstract class BaseRepository
         _dbSession = dbSession;
         _logger = logger;
 
-        var compiler = new MySqlCompiler();
+        Compiler compiler;
+        if (dbSession is PostgresSession) compiler = new PostgresCompiler();
+        else if (dbSession is MySqlSession) compiler = new MySqlCompiler();
+        else if (dbSession is SQLiteSession) compiler = new SqliteCompiler();
+        else throw new Exception($"Session type not supported: {dbSession.GetType().Name}");
+
         _db = new QueryFactory(_dbSession.Connection, compiler);
 
         _db.Logger = compiled =>
@@ -37,9 +45,9 @@ public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> whe
 {
     protected readonly string Table = TableName.Of<T>();
     protected Query _query => _db.Query(Table);
-    protected BaseRepository(IDbSession dbSession, ILogger<T> logger) : base(dbSession, logger)
+    protected BaseRepository(IDbSession dbSession, ILogger logger) : base(dbSession, logger)
     {
-        //_query = _db.Query(Table);
+        
     }
 
     public abstract Task<T> CreateAsync(T t);
@@ -65,7 +73,7 @@ public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> whe
 
     public virtual async Task<bool> DeleteAsync(Guid id)
     {
-        var affected = await _db.Query(TableName.Of<T>()).Where(nameof(Model.Id), id).DeleteAsync();
+        var affected = await _query.Where(nameof(Model.Id), id).DeleteAsync();
         return affected > 0;
     }
 

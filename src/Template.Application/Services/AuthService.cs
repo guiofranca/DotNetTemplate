@@ -31,13 +31,15 @@ public class AuthService : BaseService<LoginResponse>
     public async Task<IServiceResult<LoginResponse>> TryLoginAsync(LoginRequest loginRequest)
     {
         var user = await _userRepository.GetByEmail(loginRequest.Email);
-        if (user == null) return FailureResult("Credentials does not match our records.");
+        if (user == null) return FailureResult(_g["Credentials does not match our records."]);
         var success = BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password);
-        if (!success) return FailureResult("Credentials does not match our records.");
+        if (!success) return FailureResult(_g["Credentials does not match our records."]);
 
-        //ReHashPass
-        user.Password = HashPassword(loginRequest.Password);
-        await _userRepository.UpdateAsync(user);
+        if (BCrypt.Net.BCrypt.PasswordNeedsRehash(user.Password, 12))
+        {
+            user.Password = HashPassword(loginRequest.Password);
+            await _userRepository.UpdateAsync(user);
+        }
 
         user.Roles = await _userRepository.GetRolesAsync(user);
         var tokenResult = await _jwtTokenService.GenerateTokenAsync(user, user.Roles.Select(r => r.Name));
@@ -52,7 +54,7 @@ public class AuthService : BaseService<LoginResponse>
             }
         };
 
-        return FoundResult(model);
+        return OkResult(model);
     }
 
     public async Task<IServiceResult<LogoutResponse>> LogoutAsync(string token)
@@ -64,8 +66,11 @@ public class AuthService : BaseService<LoginResponse>
 
     public async Task<IServiceResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
-
         var passwordHash = HashPassword(registerRequest.Password);
+
+        var taken = await _userRepository.GetByEmail(registerRequest.Email);
+        if (taken is not null) return FailureResult(_g["This e-mail has already been taken"]);
+
         var user = new User() { Name = registerRequest.Name, Email = registerRequest.Email, Password = passwordHash, Verified = true };
         await _cache.RememberModelAsync(user, _userRepository.CreateAsync);
 
@@ -91,7 +96,7 @@ public class AuthService : BaseService<LoginResponse>
         
 
         var user = await _cache.RememberModelAsync(userId, _userRepository.FindAsync);
-        if (user == null) return NotFoundResult("User not found");
+        if (user == null) return NotFoundResult(_g["User not found"]);
 
         user.Roles = await _userRepository.GetRolesAsync(user);
         var newTokenResult = await _jwtTokenService.GenerateTokenAsync(user, user.Roles.Select(r => r.Name), token);
@@ -106,7 +111,7 @@ public class AuthService : BaseService<LoginResponse>
                 Name = user.Name
             }
         };
-        return FoundResult(model);
+        return OkResult(model);
     }
 
     private string HashPassword(string password)

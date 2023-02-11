@@ -11,10 +11,6 @@ public abstract class BaseService<T> where T : class
     protected readonly ICacheService _cache;
     protected readonly ILogger _logger;
     protected readonly IGlobalizer _g;
-    private IUnitOfWork unitOfWork;
-    private IErrorNotificator errorNotificator;
-    private ICacheService cache;
-    private ILogger<AuthService> logger;
 
     protected BaseService(IUnitOfWork unitOfWork,
         IErrorNotificator errorNotificator,
@@ -29,20 +25,13 @@ public abstract class BaseService<T> where T : class
         _g = globalizer;
     }
 
-    protected BaseService(IUnitOfWork unitOfWork, IErrorNotificator errorNotificator, ICacheService cache, ILogger<AuthService> logger)
-    {
-        this.unitOfWork = unitOfWork;
-        this.errorNotificator = errorNotificator;
-        this.cache = cache;
-        this.logger = logger;
-    }
-
     protected IServiceResult<T> OkResult(T result, string message = "")   => new ServiceResult<T>(result, ServiceResultStatus.Ok, message: message);
     protected IServiceResult<TR> OkResult<TR>(TR result, string message = "") where TR : class => new ServiceResult<TR>(result, ServiceResultStatus.Ok, message: message);
-    protected IServiceResult<T> FoundResult(T result, string message = "")   => new ServiceResult<T>(result, ServiceResultStatus.Found, message: message);
-    protected IServiceResult<TCached> FoundResult<TCached>(TCached result, string message = "") where TCached : class  => new ServiceResult<TCached>(result, ServiceResultStatus.Found, message: message);
-    protected IServiceResult<IEnumerable<T>> FoundResult(IEnumerable<T> result, string message = "")   => new ServiceResult<IEnumerable<T>>(result, ServiceResultStatus.Found, message: message);
-    protected IServiceResult<T> NotFoundResult(string message = "")          => new ServiceResult<T>(status: ServiceResultStatus.NotFound, message: message);
+    //protected IServiceResult<T> FoundResult(T result, string message = "")   => new ServiceResult<T>(result, ServiceResultStatus.Found, message: message);
+    //protected IServiceResult<TCached> FoundResult<TCached>(TCached result, string message = "") where TCached : class  => new ServiceResult<TCached>(result, ServiceResultStatus.Found, message: message);
+    //protected IServiceResult<IEnumerable<T>> FoundResult(IEnumerable<T> result, string message = "")   => new ServiceResult<IEnumerable<T>>(result, ServiceResultStatus.Found, message: message);
+    protected IServiceResult<T> NotFoundResult(string message = "") => new ServiceResult<T>(status: ServiceResultStatus.NotFound, message: message);
+    protected IServiceResult<TR> NotFoundResult<TR>(string message = "") where TR : class => new ServiceResult<TR>(status: ServiceResultStatus.NotFound, message: message);
     protected IServiceResult<T> CreatedResult(T result, string message = "") => new ServiceResult<T>(result, ServiceResultStatus.Created, message: message);
     protected IServiceResult<T> UpdatedResult(T result, string message = "") => new ServiceResult<T>(result, ServiceResultStatus.Updated, message: message);
     protected IServiceResult<T> DeletedResult(T? result = null, string message = "") => new ServiceResult<T>(result, ServiceResultStatus.Deleted, message: message);
@@ -63,7 +52,7 @@ public abstract class BaseService<T> where T : class
         var cached = await _cache.GetAsync<TCached>(key);
         if (cached == null) return null;
 
-        _logger.LogDebug($"Cache hit on {key}!");
+        _logger.LogDebug("Cache hit on {key}!", key);
         return cached;
     }
 }

@@ -14,6 +14,14 @@ public class CreateRolesTable : Migration
             .WithColumn("Name").AsString().Unique()
             .WithColumn("CreatedAt").AsDateTime()
             .WithColumn("UpdatedAt").AsDateTime();
+
+        Insert.IntoTable(TableName.Of<Role>()).Row(new
+        {
+            Id = Guid.NewGuid(),
+            Name = "Admin",
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+        });
     }
 
     public override void Down()

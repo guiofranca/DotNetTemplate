@@ -4,7 +4,7 @@ namespace Template.Domain.Models;
 
 public class BlogPost : Model
 {
-    public Guid UserId { get; set; }
+    public required Guid UserId { get; set; }
     public User? User { get; set; }
     public required string Title { get; set; }
     public required string Content { get; set; }

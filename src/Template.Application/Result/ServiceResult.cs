@@ -13,7 +13,7 @@ public class ServiceResult<T> : IServiceResult<T> where T : class
     {
     }
 
-    public ServiceResult(T? data = null, ServiceResultStatus status = ServiceResultStatus.Found, string? message = null, string? errorMessage = null)
+    public ServiceResult(T? data = null, ServiceResultStatus status = ServiceResultStatus.Ok, string? message = null, string? errorMessage = null)
     {
         Data = data;
         Status = status;

@@ -43,7 +43,6 @@ public class ApiResult<T> where T : class
         return serviceResult.Status switch
         {
             ServiceResultStatus.Ok          => HttpStatusCode.OK,
-            ServiceResultStatus.Found       => HttpStatusCode.OK,
             ServiceResultStatus.NotFound    => HttpStatusCode.NotFound,
             ServiceResultStatus.Created     => HttpStatusCode.Created,
             ServiceResultStatus.Deleted     => HttpStatusCode.OK,
