@@ -5,5 +5,5 @@ namespace Template.Domain.Interfaces.Repositories;
 
 public interface IBlogCommentRepository : IBaseRepository<BlogComment>
 {
-     public Task<IEnumerable<BlogComment>> CommentsFromPost(Guid id);
+     public Task<IEnumerable<BlogComment>> CommentsFromPostAsync(Guid id);
 }

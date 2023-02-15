@@ -1,5 +1,4 @@
-﻿using Dapper;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SqlKata.Execution;
 using Template.Data.Repositories.Shared;
 using Template.Domain.Interfaces;
@@ -10,9 +9,7 @@ namespace Template.Data.Repositories;
 
 public class UserRepository : BaseRepository<User>, IUserRepository
 {
-    private readonly string RoleTable = TableName.Of<Role>();
-    private readonly string UserRoleTable = "user_role";
-    public UserRepository(IDbSession dbSession, ILogger<User> logger) : base(dbSession, logger)
+    public UserRepository(IDbSession dbSession, ILogger<UserRepository> logger) : base(dbSession, logger)
     {
     }
 
@@ -33,54 +30,22 @@ public class UserRepository : BaseRepository<User>, IUserRepository
 
     public async Task<bool> EmailExistsAsync(string email, bool excludeOwnEmail = false)
     {
-        var query = _db.Query(Table).Where("Email", email);
+        var query = _db.Query(Table).Where(nameof(User.Email), email);
         if(excludeOwnEmail)
         {
-            query.WhereNot("Email", email);
+            query.WhereNot(nameof(User.Email), email);
         }
         var exists = await query.FirstOrDefaultAsync();
         return exists is not null;
     }
 
-    public async Task<User?> GetByEmail(string email)
+    public async Task<User?> FindByEmailAsync(string email)
     {
         var user = await _db.Query(Table)
-            .Where("Email", email)
+            .Where(nameof(User.Email), email)
             .FirstOrDefaultAsync<User?>();
 
         return user;
-    }
-
-    public async Task<IEnumerable<Role>> GetRolesAsync(User user)
-    {
-        var roles = await _db.Query(RoleTable)
-            .Join(UserRoleTable, $"{RoleTable}.Id", $"{UserRoleTable}.RoleId")
-            .Where("UserId", user.Id)
-            .GetAsync<Role>();
-
-        return roles;
-    }
-
-    public async Task<bool> AddRoleAsync(User user, Role role)
-    {
-        var affected = await _db.Query(UserRoleTable).InsertAsync(new
-        {
-            UserId = user.Id,
-            RoleId = role.Id,
-            CreatedAt = DateTime.Now,
-        });
-
-        return affected > 0;
-    }
-
-    public async Task<bool> RemoveRoleAsync(User user, Role role)
-    {
-        var affected = await _db.Query(UserRoleTable)
-            .Where("UserId", user.Id)
-            .Where("RoleId", role.Id)
-            .DeleteAsync();
-
-        return affected > 0;
     }
 
     public override async Task<User> UpdateAsync(User t)

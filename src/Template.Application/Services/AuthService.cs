@@ -14,6 +14,7 @@ namespace Template.Application.Services;
 public class AuthService : BaseService<LoginResponse>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly IJwtTokenService _jwtTokenService;
 
     public AuthService(IUserRepository userRepository,
@@ -22,15 +23,17 @@ public class AuthService : BaseService<LoginResponse>
         IErrorNotificator errorNotificator,
         ICacheService _cache,
         ILogger<AuthService> logger,
-        IGlobalizer globalizer) : base(unitOfWork, errorNotificator, _cache, logger, globalizer)
+        IGlobalizer globalizer,
+        IRoleRepository roleRepository) : base(unitOfWork, errorNotificator, _cache, logger, globalizer)
     {
         _userRepository = userRepository;
         _jwtTokenService = jwtTokenService;
+        _roleRepository = roleRepository;
     }
 
     public async Task<IServiceResult<LoginResponse>> TryLoginAsync(LoginRequest loginRequest)
     {
-        var user = await _userRepository.GetByEmail(loginRequest.Email);
+        var user = await _userRepository.FindByEmailAsync(loginRequest.Email);
         if (user == null) return FailureResult(_g["Credentials does not match our records."]);
         var success = BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password);
         if (!success) return FailureResult(_g["Credentials does not match our records."]);
@@ -41,7 +44,7 @@ public class AuthService : BaseService<LoginResponse>
             await _userRepository.UpdateAsync(user);
         }
 
-        user.Roles = await _userRepository.GetRolesAsync(user);
+        user.Roles = await _roleRepository.GetAsync(user);
         var tokenResult = await _jwtTokenService.GenerateTokenAsync(user, user.Roles.Select(r => r.Name));
         if (tokenResult.IsError) return FailureResult(tokenResult.Message);
         var model = new LoginResponse 
@@ -68,7 +71,7 @@ public class AuthService : BaseService<LoginResponse>
     {
         var passwordHash = HashPassword(registerRequest.Password);
 
-        var taken = await _userRepository.GetByEmail(registerRequest.Email);
+        var taken = await _userRepository.FindByEmailAsync(registerRequest.Email);
         if (taken is not null) return FailureResult(_g["This e-mail has already been taken"]);
 
         var user = new User() { Name = registerRequest.Name, Email = registerRequest.Email, Password = passwordHash, Verified = true };
@@ -98,7 +101,7 @@ public class AuthService : BaseService<LoginResponse>
         var user = await _cache.RememberModelAsync(userId, _userRepository.FindAsync);
         if (user == null) return NotFoundResult(_g["User not found"]);
 
-        user.Roles = await _userRepository.GetRolesAsync(user);
+        user.Roles = await _roleRepository.GetAsync(user);
         var newTokenResult = await _jwtTokenService.GenerateTokenAsync(user, user.Roles.Select(r => r.Name), token);
         if (newTokenResult.IsError) return FailureResult(newTokenResult.Message);
 

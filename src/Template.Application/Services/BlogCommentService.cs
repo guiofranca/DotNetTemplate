@@ -27,7 +27,7 @@ public class BlogCommentService : BaseService<BlogCommentModel>
 
     public async Task<IServiceResult<IEnumerable<BlogCommentModel>>> GetAllFromPost(Guid postId)
     {
-        var blogComments = await _blogCommentRepository.CommentsFromPost(postId);
+        var blogComments = await _blogCommentRepository.CommentsFromPostAsync(postId);
         var users = await _userRepository.FindAsync(blogComments.Select(b => b.UserId).Distinct().ToArray());
 
         return OkResult(blogComments.Select(b => new BlogCommentModel 

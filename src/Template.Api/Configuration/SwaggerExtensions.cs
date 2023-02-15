@@ -67,15 +67,17 @@ public static class SwaggerExtensions
         return builder;
     }
 
-    public static WebApplication ConfigureSwagger(this WebApplication app, IApiVersionDescriptionProvider provider)
+    public static WebApplication ConfigureSwagger(this WebApplication app)
     {
+        app.UseApiVersioning();
+        var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI(
                 options =>
                 {
-                    foreach (var description in provider.ApiVersionDescriptions)
+                    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
                         options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
                     }

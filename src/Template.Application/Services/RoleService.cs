@@ -39,13 +39,13 @@ public class RoleService : BaseService<RoleModel>
         var user = await _userRepository.FindAsync(roleRequest.UserId);
         if (user == null) return NotFoundResult(_g["User not found"]);
 
-        var userRoles = await _userRepository.GetRolesAsync(user);
+        var userRoles = await _roleRepository.GetAsync(user);
         if (userRoles.Any(r => r.Id == roleRequest.RoleId)) return FailureResult(_g["User already has the role"]);
 
         var role = await _roleRepository.FindAsync(roleRequest.RoleId);
         if (role == null) return NotFoundResult(_g["Role not found"]);
 
-        var success = await _userRepository.AddRoleAsync(user, role);
+        var success = await _roleRepository.AddAsync(user, role);
 
         if (success)
         {
@@ -64,7 +64,7 @@ public class RoleService : BaseService<RoleModel>
         var role = await _roleRepository.FindAsync(roleRequest.RoleId);
         if (role == null) return NotFoundResult(_g["Role not found"]);
 
-        var success = await _userRepository.RemoveRoleAsync(user, role);
+        var success = await _roleRepository.RemoveAsync(user, role);
 
         if (success)
         {

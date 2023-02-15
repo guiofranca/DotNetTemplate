@@ -14,7 +14,7 @@ public class BlogCommentRepository : BaseRepository<BlogComment>, IBlogCommentRe
     {
     }
 
-    public async Task<IEnumerable<BlogComment>> CommentsFromPost(Guid id) 
+    public async Task<IEnumerable<BlogComment>> CommentsFromPostAsync(Guid id) 
         => await _query.Where("BlogPostId", id).OrderByDesc("CreatedAt").GetAsync<BlogComment>();
 
     public async override Task<BlogComment> CreateAsync(BlogComment t)

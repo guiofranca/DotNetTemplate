@@ -22,7 +22,11 @@ namespace Template.Data.Contexts
             Connection.Open();
         }
 
-        public void Dispose() => Connection?.Dispose();
+        public void Dispose()
+        {
+            Connection?.Close();
+            SqliteConnection.ClearAllPools();
+        }
     }
 
     public class SQLiteGuidTypeHandler : SqlMapper.TypeHandler<Guid>

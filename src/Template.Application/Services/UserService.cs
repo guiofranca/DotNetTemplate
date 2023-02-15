@@ -17,14 +17,17 @@ namespace Template.Application.Services;
 public class UserService : BaseService<UserModel>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepository;
     public UserService(IUnitOfWork unitOfWork,
                        IErrorNotificator errorNotificator,
                        ICacheService cache,
                        ILogger<UserService> logger,
                        IGlobalizer globalizer,
-                       IUserRepository userRepository) : base(unitOfWork, errorNotificator, cache, logger, globalizer)
+                       IUserRepository userRepository,
+                       IRoleRepository roleRepository) : base(unitOfWork, errorNotificator, cache, logger, globalizer)
     {
         _userRepository = userRepository;
+        _roleRepository = roleRepository;
     }
 
     public async Task<IServiceResult<UserModel>> GetAsync(Guid id)
@@ -41,7 +44,7 @@ public class UserService : BaseService<UserModel>
         var user = await _cache.RememberModelAsync(id, _userRepository.FindAsync);
         if (user == null) return NotFoundResult<DetailedUserModel>(_g["User not found"]);
 
-        var roles = await _userRepository.GetRolesAsync(user);
+        var roles = await _roleRepository.GetAsync(user);
 
         var model = MapToDetailedUserModel(user, roles);
         return OkResult(model);

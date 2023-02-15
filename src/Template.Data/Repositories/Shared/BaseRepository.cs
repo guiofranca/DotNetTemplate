@@ -1,6 +1,4 @@
-﻿using Dapper;
-using Microsoft.Extensions.Logging;
-using SQLitePCL;
+﻿using Microsoft.Extensions.Logging;
 using SqlKata;
 using SqlKata.Compilers;
 using SqlKata.Execution;
