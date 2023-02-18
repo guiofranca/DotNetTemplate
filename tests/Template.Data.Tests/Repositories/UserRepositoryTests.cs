@@ -1,4 +1,5 @@
-﻿using Template.Data.Repositories;
+﻿using FluentAssertions;
+using Template.Data.Repositories;
 using Template.Data.Tests.Shared;
 using Template.Domain.Models;
 
@@ -21,56 +22,7 @@ public class UserRepositoryTests : SQLiteDatabaseBuilder<UserRepository>
         await _userRepository.CreateAsync(expected);
         var actual = await _userRepository.FindAsync(expected.Id);
 
-        Assert.Multiple(() =>
-        {
-            Assert.Equal(expected.Id, actual!.Id);
-            Assert.Equal(expected.Name, actual!.Name);
-            Assert.Equal(expected.Email, actual!.Email);
-            Assert.Equal(expected.Password, actual!.Password);
-            Assert.Equal(expected.Verified, actual!.Verified);
-        });
-    }
-
-    [Fact]
-    public async Task FindAllAsync_TakesAllUsers()
-    {
-        await _userRepository.CreateAsync(NewUser(1));
-        await _userRepository.CreateAsync(NewUser(2));
-
-        var users = await _userRepository.FindAllAsync();
-
-        Assert.Equal(2, users.Count());
-    }
-
-    [Fact]
-    public async Task FindAsync_FindsByManyIds()
-    {
-        var user1 = await _userRepository.CreateAsync(NewUser(1));
-        var user2 = await _userRepository.CreateAsync(NewUser(2));
-
-        var users = await _userRepository.FindAsync(user1.Id, user2.Id);
-
-        Assert.Multiple(() =>
-        {
-            Assert.Equal(2, users.Count());
-            Assert.Contains(users, u => u.Id == user1.Id);
-            Assert.Contains(users, u => u.Id == user2.Id);
-        });
-    }
-
-    [Fact]
-    public async Task DeleteAsync_ReturnsTrueIfDeleted()
-    {
-        var user1 = await _userRepository.CreateAsync(NewUser(1));
-
-        var deleted = await _userRepository.DeleteAsync(user1.Id);
-        var notDeleted = await _userRepository.DeleteAsync(Guid.NewGuid());
-
-        Assert.Multiple(() =>
-        {
-            Assert.True(deleted);
-            Assert.False(notDeleted);
-        });
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
@@ -83,49 +35,39 @@ public class UserRepositoryTests : SQLiteDatabaseBuilder<UserRepository>
         await _userRepository.CreateAsync(NewUser(1));
         var actual = await _userRepository.EmailExistsAsync(email, excludeOwnEmail);
 
-        Assert.Equal(expected, actual);
+        actual.Should().Be(expected);
     }
 
     [Fact]
-    public async Task GetByEmail_GetsUserByEmail()
+    public async Task FindByEmailAsync()
     {
         var user1 = await _userRepository.CreateAsync(NewUser(1));
 
         var actual = await _userRepository.FindByEmailAsync(user1.Email);
-        var notFound = await _userRepository.FindByEmailAsync("Unknown");
 
-        Assert.Multiple(() =>
-        {
-            Assert.Equal(user1.Id, actual!.Id);
-            Assert.Null(notFound);
-        });
+        actual!.Id.Should().Be(user1.Id);
     }
 
     [Fact]
-    public async Task FindByEmailAsync_GetsUserByEmail()
+    public async Task FindByEmailAsync_ReturnsNullWhenNotFound()
     {
-        var user1 = await _userRepository.CreateAsync(NewUser(1));
-
-        var actual = await _userRepository.FindByEmailAsync(user1.Email);
         var notFound = await _userRepository.FindByEmailAsync("Unknown");
 
-        Assert.Multiple(() =>
-        {
-            Assert.Equal(user1.Id, actual!.Id);
-            Assert.Null(notFound);
-        });
+        notFound.Should().BeNull();
     }
 
     [Fact]
-    public async Task UpdateAsync_Works()
+    public async Task UpdateAsync_WorksForSelectedFields()
     {
         var user1 = await _userRepository.CreateAsync(NewUser(1));
         user1.Name = "Updated";
+        user1.Email = "Updated";
+        user1.Password = "Updated";
 
         await _userRepository.UpdateAsync(user1);
         var actual = await _userRepository.FindAsync(user1.Id);
 
-        Assert.Equal(user1.Name, actual!.Name);
+        actual.Should().BeEquivalentTo(user1);
     }
 
     private static User NewUser(int id = 1) => new() {

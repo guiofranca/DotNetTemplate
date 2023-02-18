@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Template.MigrationRunner.Migrator;
 using Microsoft.Extensions.Logging;
-using Template.Domain.Interfaces;
+using Template.Data.Repositories.Shared;
 using Template.Data.Contexts;
 using Moq;
 

@@ -1,8 +1,9 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using SqlKata.Compilers;
 using System.Data;
-using Template.Domain.Interfaces;
+using Template.Data.Repositories.Shared;
 
 namespace Template.Data.Contexts
 {
@@ -10,14 +11,15 @@ namespace Template.Data.Contexts
     {
         public IDbConnection Connection { get; }
         public IDbTransaction? Transaction { get; set; }
-
+        public Compiler Compiler { get; }
         public SQLiteSession(IConfiguration configuration)
         {
+            Compiler = new SqliteCompiler();
             var connectionString = configuration.GetConnectionString("SQLite");
             if (string.IsNullOrEmpty(connectionString)) throw new ArgumentException("Connection String Not Found on ConnectionStrings.SQLite");
             Connection = new SqliteConnection(connectionString);
 
-            SqlMapper.AddTypeHandler<Guid>(new SQLiteGuidTypeHandler());
+            SqlMapper.AddTypeHandler(new SQLiteGuidTypeHandler());
 
             Connection.Open();
         }

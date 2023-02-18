@@ -1,7 +1,8 @@
 using System.Data;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
-using Template.Domain.Interfaces;
+using SqlKata.Compilers;
+using Template.Data.Repositories.Shared;
 
 namespace Template.Data.Contexts
 {
@@ -9,9 +10,11 @@ namespace Template.Data.Contexts
     {
         public IDbConnection Connection { get; }
         public IDbTransaction? Transaction { get; set; }
+        public Compiler Compiler { get; }
 
         public MySqlSession(IConfiguration configuration)
         {
+            Compiler = new MySqlCompiler();
             var connectionString = configuration.GetConnectionString("MySql");
             if(string.IsNullOrEmpty(connectionString)) throw new ArgumentException("Connection String Not Found on ConnectionStrings.MySql");
             Connection = new MySqlConnection(connectionString);

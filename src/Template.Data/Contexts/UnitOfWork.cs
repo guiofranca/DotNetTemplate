@@ -1,3 +1,4 @@
+using Template.Data.Repositories.Shared;
 using Template.Domain.Interfaces;
 
 namespace Template.Data.Contexts;

@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SqlKata;
-using SqlKata.Compilers;
 using SqlKata.Execution;
-using Template.Data.Contexts;
-using Template.Domain.Interfaces;
 using Template.Domain.Interfaces.Repositories.Shared;
 using Template.Domain.Models.Shared;
 
@@ -20,13 +17,7 @@ public abstract class BaseRepository
         _dbSession = dbSession;
         _logger = logger;
 
-        Compiler compiler;
-        if (dbSession is PostgresSession) compiler = new PostgresCompiler();
-        else if (dbSession is MySqlSession) compiler = new MySqlCompiler();
-        else if (dbSession is SQLiteSession) compiler = new SqliteCompiler();
-        else throw new Exception($"Session type not supported: {dbSession.GetType().Name}");
-
-        _db = new QueryFactory(_dbSession.Connection, compiler);
+        _db = new QueryFactory(_dbSession.Connection, _dbSession.Compiler);
 
         _db.Logger = compiled =>
         {
