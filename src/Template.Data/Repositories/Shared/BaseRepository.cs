@@ -41,29 +41,17 @@ public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> whe
 
     public abstract Task<T> CreateAsync(T t);
 
-    public virtual async Task<T?> FindAsync(Guid id)
-    {
-        T? model = await _query.Where(nameof(Model.Id), id).FirstOrDefaultAsync<T?>();
+    public virtual async Task<T?> FindAsync(Guid id) 
+        => await _query.Where(nameof(Model.Id), id).FirstOrDefaultAsync<T?>();
 
-        return model;
-    }
+    public virtual async Task<IEnumerable<T>> FindAllAsync() 
+        => await _query.GetAsync<T>();
 
-    public virtual async Task<IEnumerable<T>> FindAllAsync()
-    {
-        var model = await _query.GetAsync<T>();
-
-        return model;
-    }
-
-    public virtual async Task<IEnumerable<T>> FindAsync(params Guid[] ids) => 
-        await _query.WhereIn(nameof(Model.Id), ids).GetAsync<T>();
+    public virtual async Task<IEnumerable<T>> FindAsync(params Guid[] ids) 
+        => await _query.WhereIn(nameof(Model.Id), ids).GetAsync<T>();
 
     public abstract Task<T> UpdateAsync(T t);
 
     public virtual async Task<bool> DeleteAsync(Guid id)
-    {
-        var affected = await _query.Where(nameof(Model.Id), id).DeleteAsync();
-        return affected > 0;
-    }
-
+        => await _query.Where(nameof(Model.Id), id).DeleteAsync() > 0;
 }

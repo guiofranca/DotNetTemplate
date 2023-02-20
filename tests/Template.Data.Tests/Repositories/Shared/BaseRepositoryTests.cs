@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Template.Data.Repositories.Shared;
 using Template.Data.Tests.Shared;
@@ -12,22 +11,8 @@ public class BaseRepositoryTests : SQLiteDatabaseBuilder<DummyRepository>
     private readonly DummyRepository _dummyRepository;
     public BaseRepositoryTests()
     {
-        _dbSession.Connection.Execute("CREATE TABLE \"dummys\" (\"Id\" UNIQUEIDENTIFIER NOT NULL, \"Name\" TEXT NOT NULL, \"CreatedAt\" DATETIME NOT NULL, \"UpdatedAt\" DATETIME NOT NULL, CONSTRAINT \"PK_dummys\" PRIMARY KEY (\"Id\"));");
-        _dbSession.Connection.Execute(
-            "INSERT INTO dummys (Id, Name, CreatedAt, UpdatedAt) " +
-            "VALUES " +
-            "(@id1, 'Dummy1', '2023-01-01', '2023-01-01'), " +
-            "(@id2, 'Dummy2', '2023-01-01', '2023-01-01'), " +
-            "(@id3, 'Dummy3', '2023-01-01', '2023-01-01'), " +
-            "(@id4, 'Dummy4', '2023-01-01', '2023-01-01'), " +
-            "(@id5, 'Dummy5', '2023-01-01', '2023-01-01');", new
-            {
-                id1 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25ca"),
-                id2 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25cb"),
-                id3 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25cc"),
-                id4 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25cd"),
-                id5 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25ce"),
-            });
+        _dbSession.Connection.Execute("""CREATE TABLE "dummys" ("Id" UNIQUEIDENTIFIER NOT NULL, "Name" TEXT NOT NULL, "CreatedAt" DATETIME NOT NULL, "UpdatedAt" DATETIME NOT NULL, CONSTRAINT "PK_dummys" PRIMARY KEY ("Id"));""");
+        Seed();
         _dummyRepository = new(_dbSession, _logger.Object);
     }
 
@@ -89,6 +74,25 @@ public class BaseRepositoryTests : SQLiteDatabaseBuilder<DummyRepository>
         var id = new Guid(guidString);
         var deleted = await _dummyRepository.DeleteAsync(id);
         deleted.Should().Be(expected);
+    }
+
+    private void Seed()
+    {
+        _dbSession.Connection.Execute(
+            "INSERT INTO dummys (Id, Name, CreatedAt, UpdatedAt) " +
+            "VALUES " +
+            "(@id1, 'Dummy1', '2023-01-01', '2023-01-01'), " +
+            "(@id2, 'Dummy2', '2023-01-01', '2023-01-01'), " +
+            "(@id3, 'Dummy3', '2023-01-01', '2023-01-01'), " +
+            "(@id4, 'Dummy4', '2023-01-01', '2023-01-01'), " +
+            "(@id5, 'Dummy5', '2023-01-01', '2023-01-01');", new
+            {
+                id1 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25ca"),
+                id2 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25cb"),
+                id3 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25cc"),
+                id4 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25cd"),
+                id5 = Guid.Parse("4ce7430e-a99e-4245-b4de-870ce68e25ce"),
+            });
     }
 }
 
