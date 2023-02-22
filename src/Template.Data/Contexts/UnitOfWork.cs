@@ -18,15 +18,7 @@ public class UnitOfWork : IUnitOfWork
         _dbSession.Transaction = _dbSession.Connection.BeginTransaction();
     }
 
-    public void Commit()
-    {
-        if(_dbSession.Transaction is null) return;
-        _dbSession.Transaction.Commit();
-    }
+    public void Commit() => _dbSession.Transaction?.Commit();
 
-    public void Rollback()
-    {
-        if(_dbSession.Transaction is null) return;
-        _dbSession.Transaction.Rollback();
-    }
+    public void Rollback() => _dbSession.Transaction?.Rollback();
 }
