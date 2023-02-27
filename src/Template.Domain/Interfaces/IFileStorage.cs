@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Template.Domain.Interfaces;
+﻿namespace Template.Domain.Interfaces;
 
 public interface IFileStorage
 {
-    void Save(string name, Stream ms);
+    void Save(string name, Stream stream);
     void Delete(string name);
 }

@@ -34,9 +34,9 @@ public class AuthService : BaseService<LoginResponse>
     public async Task<IServiceResult<LoginResponse>> TryLoginAsync(LoginRequest loginRequest)
     {
         var user = await _userRepository.FindByEmailAsync(loginRequest.Email);
-        if (user == null) return FailureResult(_g["Credentials does not match our records."]);
+        if (user == null) return FailureResult(_g["Credentials does not match our records"]);
         var success = BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password);
-        if (!success) return FailureResult(_g["Credentials does not match our records."]);
+        if (!success) return FailureResult(_g["Credentials does not match our records"]);
 
         if (BCrypt.Net.BCrypt.PasswordNeedsRehash(user.Password, 12))
         {
@@ -69,11 +69,10 @@ public class AuthService : BaseService<LoginResponse>
 
     public async Task<IServiceResult<LoginResponse>> RegisterAsync(RegisterRequest registerRequest)
     {
+        var taken = await _userRepository.EmailExistsAsync(registerRequest.Email);
+        if (taken) return FailureResult(_g["This e-mail has already been taken"]);
+
         var passwordHash = HashPassword(registerRequest.Password);
-
-        var taken = await _userRepository.FindByEmailAsync(registerRequest.Email);
-        if (taken is not null) return FailureResult(_g["This e-mail has already been taken"]);
-
         var user = new User() { Name = registerRequest.Name, Email = registerRequest.Email, Password = passwordHash, Verified = true };
         await _cache.RememberModelAsync(user, _userRepository.CreateAsync);
 
