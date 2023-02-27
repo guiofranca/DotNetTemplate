@@ -8,9 +8,8 @@ using Template.Domain.Interfaces;
 
 namespace Template.Api.v1.Controllers;
 
-[ApiController]
 [Authorize(AuthenticationSchemes = "Bearer")]
-public class BlogPostController : V1Controller
+public class BlogPostController : V1ControllerBase
 {
     public ILogger<BlogPostController> _logger;
 

@@ -9,7 +9,7 @@ using Template.Domain.Interfaces;
 namespace Template.Api.v1.Controllers;
 
 [AuthorizeRole(Roles.Admin)]
-public class UserController : V1Controller
+public class UserController : V1ControllerBase
 {
     private readonly UserService _userService;
     public UserController(IUser user,

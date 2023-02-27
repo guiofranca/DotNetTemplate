@@ -6,14 +6,13 @@ using Template.Domain.Interfaces;
 namespace Template.Api.v1.Controllers.Shared;
 
 [ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{v:apiVersion}/[controller]")]
-public abstract class V1Controller : ControllerBase
+public abstract class V1ControllerBase : ControllerBase
 {
     public IUser _user { get; set; }
     public IErrorNotificator _errorNotificator { get; set; }
 
-    protected V1Controller(IUser user, IErrorNotificator errorNotificator)
+    protected V1ControllerBase(IUser user, IErrorNotificator errorNotificator)
     {
         _user = user;
         _errorNotificator = errorNotificator;

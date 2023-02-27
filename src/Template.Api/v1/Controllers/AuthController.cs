@@ -7,8 +7,7 @@ using Template.Domain.Interfaces;
 
 namespace Template.Api.v1.Controllers;
 
-[ApiController]
-public class AuthController : V1Controller
+public class AuthController : V1ControllerBase
 {
     private readonly AuthService _authService;
 

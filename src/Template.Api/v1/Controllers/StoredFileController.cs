@@ -6,7 +6,7 @@ using Template.Domain.Interfaces;
 
 namespace Template.Api.v1.Controllers;
 
-public class StoredFileController : V1Controller
+public class StoredFileController : V1ControllerBase
 {
     private readonly StoredFileService _storedFileService;
     public StoredFileController(IUser user, IErrorNotificator errorNotificator, StoredFileService storedFileService) : base(user, errorNotificator)

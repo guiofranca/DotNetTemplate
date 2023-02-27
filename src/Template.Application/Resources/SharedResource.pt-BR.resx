@@ -132,6 +132,9 @@
   <data name="Content" xml:space="preserve">
     <value>Conteúdo</value>
   </data>
+  <data name="Credentials does not match our records" xml:space="preserve">
+    <value>As credenciais não foram encontradas</value>
+  </data>
   <data name="Invalid token" xml:space="preserve">
     <value>Token inválido</value>
   </data>
@@ -161,6 +164,9 @@
   </data>
   <data name="The passwords do not match" xml:space="preserve">
     <value>As senhas não são iguais</value>
+  </data>
+  <data name="This e-mail has already been taken" xml:space="preserve">
+    <value>Este e-mail já está em uso</value>
   </data>
   <data name="This is the API Version 2" xml:space="preserve">
     <value>Essa é a Versão 2 da API</value>

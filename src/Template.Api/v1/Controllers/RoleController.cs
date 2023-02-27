@@ -9,7 +9,7 @@ using Template.Domain.Interfaces;
 namespace Template.Api.v1.Controllers;
 
 [AuthorizeRole(Roles.Admin)]
-public class RoleController : V1Controller
+public class RoleController : V1ControllerBase
 {
     private readonly RoleService _roleService;
     public RoleController(IUser user, IErrorNotificator errorNotificator, RoleService roleService) : base(user, errorNotificator)

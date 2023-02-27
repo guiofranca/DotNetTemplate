@@ -4,7 +4,6 @@ using Template.Domain.Interfaces;
 namespace Template.Api.v2.Controllers;
 
 [ApiController]
-[ApiVersion("2.0")]
 [Route("api/v{v:apiVersion}/example")]
 public class ExampleV2Controller : ControllerBase
 {

@@ -8,9 +8,8 @@ using Template.Domain.Interfaces;
 
 namespace Template.Api.v1.Controllers;
 
-[ApiController]
 [Authorize(AuthenticationSchemes = "Bearer")]
-public class BlogCommentController : V1Controller
+public class BlogCommentController : V1ControllerBase
 {
     private readonly BlogCommentService _blogCommentService;
 

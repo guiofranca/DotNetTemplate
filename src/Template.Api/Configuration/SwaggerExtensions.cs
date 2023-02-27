@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
 using Microsoft.OpenApi.Models;
+using Template.Api.v1.Controllers.Shared;
+using Template.Api.v2.Controllers;
 
 namespace Template.Api.Configuration;
 
@@ -21,6 +24,7 @@ public static class SwaggerExtensions
             options.AssumeDefaultVersionWhenUnspecified = true;
             options.DefaultApiVersion = new ApiVersion(1, 0);
             options.ReportApiVersions = true;
+            options.Conventions.Add(new VersionByNamespaceConvention());
         });
 
         builder.Services.AddSwaggerGen(options =>
@@ -77,6 +81,7 @@ public static class SwaggerExtensions
             app.UseSwaggerUI(
                 options =>
                 {
+                    options.DefaultModelsExpandDepth(0);
                     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
                         options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
