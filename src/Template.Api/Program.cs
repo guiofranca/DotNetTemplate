@@ -2,10 +2,9 @@ using Serilog;
 using Template.Api.Configuration;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Template.Application.Resources;
-using Template.Infrastructure.Queue.Configuration;
-using Template.Infrastructure.Queue;
 using Coravel.Queuing.Interfaces;
 using Coravel;
+using Template.Application.Jobs.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,8 +50,7 @@ builder.Services.AddCors(options =>
 //IoC
 builder.Services.ConfigureDependencies();
 
-builder.Services.AddCoravelQueue();
-//builder.Services.AddScoped<JobOne>();
+builder.Services.AddWorkerQueue();
 
 var app = builder.Build();
 
