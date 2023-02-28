@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using SqlKata;
 using SqlKata.Execution;
-using Template.Domain.Interfaces.Repositories.Shared;
-using Template.Domain.Models.Shared;
+using Template.Core.Interfaces.Repositories.Shared;
+using Template.Core.Models.Shared;
 
 namespace Template.Data.Repositories.Shared;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Api.Configuration;
 

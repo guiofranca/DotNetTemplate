@@ -3,9 +3,9 @@ using Template.Application.DTO.Auth;
 using Template.Application.DTO.Profile;
 using Template.Application.Result;
 using Template.Application.Services.Shared;
-using Template.Domain.Interfaces;
-using Template.Domain.Interfaces.Repositories;
-using Template.Domain.Models;
+using Template.Core.Interfaces;
+using Template.Core.Interfaces.Repositories;
+using Template.Core.Models;
 
 namespace Template.Application.Services;
 

@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using StackExchange.Redis.KeyspaceIsolation;
 using System.Text.Json;
-using Template.Domain.Interfaces;
-using Template.Domain.Models.Shared;
+using Template.Core.Interfaces;
+using Template.Core.Models.Shared;
 
 namespace Template.Infrastructure.Cache
 {

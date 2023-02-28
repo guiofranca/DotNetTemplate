@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Template.Domain.Interfaces;
+namespace Template.Core.Interfaces;
 
 public interface IUser
 {

@@ -1,4 +1,4 @@
-﻿using Template.Domain.Interfaces;
+﻿using Template.Core.Interfaces;
 
 namespace Template.Infrastructure.FileStorage;
 

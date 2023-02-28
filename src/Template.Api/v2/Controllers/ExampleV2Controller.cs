@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Template.Domain.Interfaces;
+﻿using Coravel.Queuing.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Template.Core.Interfaces;
+using Template.Infrastructure.Queue;
 
 namespace Template.Api.v2.Controllers;
 
@@ -17,4 +19,18 @@ public class ExampleV2Controller : ControllerBase
     [HttpGet("")]
     public ActionResult<string> Index()
         => Ok(_g["This is the API Version 2"]);
+
+    [HttpPost]
+    public ActionResult<string> Post(string payload, [FromServices] IQueue queue, [FromServices] ILogger<ExampleV2Controller> logger) {
+        //queue.QueueAsyncTask(async () =>
+        //{
+        //    logger.LogDebug($"{payload} started!");
+        //    await Task.Delay(2000);
+        //    logger.LogDebug($"{payload} finished!");
+        //});
+
+        //queue.QueueInvocable<JobOne>();
+
+        return Ok(payload);
+    }
 }

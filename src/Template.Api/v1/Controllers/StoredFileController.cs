@@ -2,7 +2,7 @@
 using Template.Api.v1.Controllers.Shared;
 using Template.Application.DTO.StoredFile;
 using Template.Application.Services;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Api.v1.Controllers;
 

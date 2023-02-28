@@ -3,8 +3,8 @@ using Template.Api.v1.Attributes;
 using Template.Api.v1.Controllers.Shared;
 using Template.Application.DTO.Role;
 using Template.Application.Services;
-using Template.Domain.Enums;
-using Template.Domain.Interfaces;
+using Template.Core.Enums;
+using Template.Core.Interfaces;
 
 namespace Template.Api.v1.Controllers;
 

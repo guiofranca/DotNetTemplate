@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Template.Data.Repositories.Shared;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Data.Contexts
 {

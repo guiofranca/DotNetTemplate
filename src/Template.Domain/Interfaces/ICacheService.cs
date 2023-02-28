@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using Template.Domain.Models.Shared;
+using Template.Core.Models.Shared;
 
-namespace Template.Domain.Interfaces;
+namespace Template.Core.Interfaces;
 
 public interface ICacheService
 {

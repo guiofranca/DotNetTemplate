@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Template.Domain.Enums;
+namespace Template.Core.Enums;
 
 public enum Roles
 {

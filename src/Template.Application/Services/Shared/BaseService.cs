@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Template.Application.Result;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Application.Services.Shared;
 

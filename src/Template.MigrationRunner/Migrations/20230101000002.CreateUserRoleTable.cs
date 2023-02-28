@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 using Template.Data.Repositories.Shared;
-using Template.Domain.Models;
+using Template.Core.Models;
 
 namespace Template.MigrationRunner.Migrations;
 

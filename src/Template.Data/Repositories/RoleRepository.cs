@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using SqlKata.Execution;
 using Template.Data.Repositories.Shared;
-using Template.Domain.Interfaces;
-using Template.Domain.Interfaces.Repositories;
-using Template.Domain.Models;
+using Template.Core.Interfaces;
+using Template.Core.Interfaces.Repositories;
+using Template.Core.Models;
 
 namespace Template.Data.Repositories;
 

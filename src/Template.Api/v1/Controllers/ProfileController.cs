@@ -4,8 +4,8 @@ using Template.Api.v1.Controllers.Shared;
 using Template.Application.DTO.Profile;
 using Template.Application.DTO.User;
 using Template.Application.Services;
-using Template.Domain.Enums;
-using Template.Domain.Interfaces;
+using Template.Core.Enums;
+using Template.Core.Interfaces;
 
 namespace Template.Api.v1.Controllers;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using Template.Application.Resources;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Application.Services;
 

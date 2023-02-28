@@ -1,7 +1,7 @@
-using Template.Domain.Interfaces.Repositories.Shared;
-using Template.Domain.Models;
+using Template.Core.Interfaces.Repositories.Shared;
+using Template.Core.Models;
 
-namespace Template.Domain.Interfaces.Repositories;
+namespace Template.Core.Interfaces.Repositories;
 
 public interface IBlogCommentRepository : IBaseRepository<BlogComment>
 {

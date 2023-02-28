@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A835CFE5-C2FC-4117-A31E-2DED58E4CDC2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Domain", "src\Template.Domain\Template.Domain.csproj", "{9307D8EB-B369-44EB-82A8-26A229E8BACF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Core", "src\Template.Domain\Template.Core.csproj", "{9307D8EB-B369-44EB-82A8-26A229E8BACF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Data", "src\Template.Data\Template.Data.csproj", "{3CB112BB-AC1E-4BD7-A1DC-F92DE891CA7F}"
 EndProject
@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Infrastructure", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{759BBDD3-B3EE-4787-A22C-5EBFEE15E1D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.Data.Tests", "tests\Template.Data.Tests\Template.Data.Tests.csproj", "{A2635C3D-446D-4466-8158-B76D3DF143A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Data.Tests", "tests\Template.Data.Tests\Template.Data.Tests.csproj", "{A2635C3D-446D-4466-8158-B76D3DF143A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

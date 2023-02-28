@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Template.Data.Repositories;
 using Template.Data.Tests.Shared;
-using Template.Domain.Models;
+using Template.Core.Models;
 
 namespace Template.Data.Tests.Repositories;
 

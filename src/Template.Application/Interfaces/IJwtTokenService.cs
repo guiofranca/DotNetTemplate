@@ -1,5 +1,5 @@
 ﻿using Template.Application.Result;
-using Template.Domain.Models;
+using Template.Core.Models;
 
 namespace Template.Application.Interfaces
 {

@@ -1,6 +1,6 @@
-﻿using Template.Domain.Models.Shared;
+﻿using Template.Core.Models.Shared;
 
-namespace Template.Domain.Interfaces.Repositories.Shared;
+namespace Template.Core.Interfaces.Repositories.Shared;
 
 public interface IBaseRepository<T> where T : Model
 {

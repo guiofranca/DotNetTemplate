@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Template.Domain.Enums;
+using Template.Core.Enums;
 
 namespace Template.Api.v1.Attributes;
 

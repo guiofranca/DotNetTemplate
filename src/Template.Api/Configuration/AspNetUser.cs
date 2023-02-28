@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using Template.Application.Interfaces;
 using Template.Application.Services;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Api.Configuration;
 

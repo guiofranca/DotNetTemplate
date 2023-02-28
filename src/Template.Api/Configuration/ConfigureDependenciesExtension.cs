@@ -4,8 +4,8 @@ using Template.Application.Services;
 using Template.Data.Contexts;
 using Template.Data.Repositories;
 using Template.Data.Repositories.Shared;
-using Template.Domain.Interfaces;
-using Template.Domain.Interfaces.Repositories;
+using Template.Core.Interfaces;
+using Template.Core.Interfaces.Repositories;
 using Template.Infrastructure.Cache;
 using Template.Infrastructure.FileStorage;
 

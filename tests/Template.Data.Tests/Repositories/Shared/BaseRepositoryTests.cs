@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Template.Data.Repositories.Shared;
 using Template.Data.Tests.Shared;
-using Template.Domain.Models.Shared;
+using Template.Core.Models.Shared;
 
 namespace Template.Data.Tests.Repositories.Shared;
 

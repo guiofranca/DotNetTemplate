@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Infrastructure.FileStorage;
 

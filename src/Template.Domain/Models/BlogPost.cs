@@ -1,6 +1,6 @@
-﻿using Template.Domain.Models.Shared;
+﻿using Template.Core.Models.Shared;
 
-namespace Template.Domain.Models;
+namespace Template.Core.Models;
 
 public class BlogPost : Model
 {

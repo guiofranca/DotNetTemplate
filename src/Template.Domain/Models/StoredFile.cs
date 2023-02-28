@@ -1,7 +1,7 @@
-﻿using Template.Domain.Interfaces;
-using Template.Domain.Models.Shared;
+﻿using Template.Core.Interfaces;
+using Template.Core.Models.Shared;
 
-namespace Template.Domain.Models;
+namespace Template.Core.Models;
 
 public class StoredFile : Model, IFile
 {

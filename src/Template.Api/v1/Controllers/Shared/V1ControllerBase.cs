@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Template.Application.Result;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Api.v1.Controllers.Shared;
 
 [ApiController]
 [Route("api/v{v:apiVersion}/[controller]")]
+[Produces("application/json")]
 public abstract class V1ControllerBase : ControllerBase
 {
     public IUser _user { get; set; }

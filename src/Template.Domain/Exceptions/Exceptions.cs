@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Template.Domain.Exceptions
+namespace Template.Core.Exceptions
 {
     public class TableNotFoundException : Exception
     {

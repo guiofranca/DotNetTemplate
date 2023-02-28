@@ -1,5 +1,5 @@
 using Template.Data.Repositories.Shared;
-using Template.Domain.Interfaces;
+using Template.Core.Interfaces;
 
 namespace Template.Data.Contexts;
 
