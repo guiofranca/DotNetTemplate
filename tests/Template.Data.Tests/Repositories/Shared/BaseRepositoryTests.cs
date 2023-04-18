@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Template.Data.Repositories.Shared;
 using Template.Data.Tests.Shared;
-using Template.Core.Models.Shared;
+using Template.Core.Models.Components;
 
 namespace Template.Data.Tests.Repositories.Shared;
 
@@ -107,7 +107,10 @@ public class DummyRepository : BaseRepository<Dummy>
     public override Task<Dummy> UpdateAsync(Dummy t) => throw new NotImplementedException();
 }
 
-public class Dummy : Model
+public class Dummy : IModel
 {
+    public Guid Id { get; init; } = Guid.NewGuid();
     public required string Name { get; set; }
+    public DateTime CreatedAt { get; init; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
 }

@@ -2,7 +2,7 @@
 using SqlKata;
 using SqlKata.Execution;
 using Template.Core.Interfaces.Repositories.Shared;
-using Template.Core.Models.Shared;
+using Template.Core.Models.Components;
 
 namespace Template.Data.Repositories.Shared;
 
@@ -30,7 +30,7 @@ public abstract class BaseRepository
     }
 }
 
-public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> where T : Model
+public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> where T : class, IModel
 {
     protected readonly string Table = TableName.Of<T>();
     protected Query _query => _db.Query(Table);
@@ -42,16 +42,16 @@ public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> whe
     public abstract Task<T> CreateAsync(T t);
 
     public virtual async Task<T?> FindAsync(Guid id) 
-        => await _query.Where(nameof(Model.Id), id).FirstOrDefaultAsync<T?>();
+        => await _query.Where(nameof(IModel.Id), id).FirstOrDefaultAsync<T?>();
 
     public virtual async Task<IEnumerable<T>> FindAllAsync() 
         => await _query.GetAsync<T>();
 
     public virtual async Task<IEnumerable<T>> FindAsync(params Guid[] ids) 
-        => await _query.WhereIn(nameof(Model.Id), ids).GetAsync<T>();
+        => await _query.WhereIn(nameof(IModel.Id), ids).GetAsync<T>();
 
     public abstract Task<T> UpdateAsync(T t);
 
     public virtual async Task<bool> DeleteAsync(Guid id)
-        => await _query.Where(nameof(Model.Id), id).DeleteAsync() > 0;
+        => await _query.Where(nameof(IModel.Id), id).DeleteAsync() > 0;
 }

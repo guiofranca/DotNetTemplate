@@ -142,8 +142,9 @@ public class MenuRunner
                     _runner.ExecuteOption(migratorSelect);
                     break;
                 case MigratorSelect.MigrateDown:
-                    Console.Write("Specify the version to migrate down to: ");
+                    Console.Write("Specify the version to migrate down to (leave empty to go back): ");
                     var versionRead = Console.ReadLine();
+                    if (string.IsNullOrEmpty(versionRead)) break;
                     long version = long.MaxValue;
                     Int64.TryParse(versionRead, out version);
                     _runner.ExecuteOption(migratorSelect, version: version);

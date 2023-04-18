@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using SqlKata.Execution;
-using System.Buffers;
 using Template.Data.Repositories.Shared;
-using Template.Core.Interfaces;
 using Template.Core.Interfaces.Repositories;
 using Template.Core.Models;
-using static Humanizer.In;
 
 namespace Template.Data.Repositories;
 
@@ -53,7 +50,7 @@ public class StoredFileRepository : BaseRepository<StoredFile>, IStoredFileRepos
 
     public async override Task<StoredFile> UpdateAsync(StoredFile t)
     {
-        t.Update();
+        t.UpdatedAt = DateTime.Now;
         await _query.Where(nameof(t.Id), t.Id).UpdateAsync(new
         {
             t.Owner,

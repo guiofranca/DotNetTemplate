@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SqlKata.Execution;
 using Template.Data.Repositories.Shared;
-using Template.Core.Interfaces;
 using Template.Core.Interfaces.Repositories;
-using Template.Core.Interfaces.Repositories.Shared;
 using Template.Core.Models;
 
 namespace Template.Data.Repositories;
@@ -34,7 +32,7 @@ public class BlogCommentRepository : BaseRepository<BlogComment>, IBlogCommentRe
 
     public async override Task<BlogComment> UpdateAsync(BlogComment t)
     {
-        t.Update();
+        t.UpdatedAt = DateTime.Now;
         await _query.Where("Id", t.Id).UpdateAsync(new 
         {
             t.Content,

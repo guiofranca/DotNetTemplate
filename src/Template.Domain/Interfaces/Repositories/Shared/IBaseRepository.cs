@@ -1,8 +1,8 @@
-﻿using Template.Core.Models.Shared;
+﻿using Template.Core.Models.Components;
 
 namespace Template.Core.Interfaces.Repositories.Shared;
 
-public interface IBaseRepository<T> where T : Model
+public interface IBaseRepository<T> where T : IModel
 {
     Task<T?> FindAsync(Guid id);
     public Task<IEnumerable<T>> FindAsync(params Guid[] ids);

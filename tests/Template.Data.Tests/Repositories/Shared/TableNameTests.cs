@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Template.Data.Repositories.Shared;
+﻿using Template.Data.Repositories.Shared;
 
 namespace Template.Data.Tests.Repositories.Shared;
 
