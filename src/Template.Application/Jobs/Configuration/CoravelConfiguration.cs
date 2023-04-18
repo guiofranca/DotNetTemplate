@@ -11,5 +11,6 @@ public static class CoravelConfiguration
     {
         services.AddQueue();
         services.AddTransient<DummyJob>();
+        services.AddTransient<DummyWithPayloadJob>();
     }
 }

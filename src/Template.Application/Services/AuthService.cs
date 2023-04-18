@@ -57,7 +57,7 @@ public class AuthService : BaseService<LoginResponse>
             }
         };
 
-        return OkResult(model);
+        return OkResult(model, _g["Login successful"]);
     }
 
     public async Task<IServiceResult<LogoutResponse>> LogoutAsync(string token)

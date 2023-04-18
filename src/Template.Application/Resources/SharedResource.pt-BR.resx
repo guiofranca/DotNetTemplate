@@ -141,6 +141,9 @@
   <data name="Logged out" xml:space="preserve">
     <value>Você saiu</value>
   </data>
+  <data name="Login successful" xml:space="preserve">
+    <value>Entrou com sucesso</value>
+  </data>
   <data name="One or more validation errors occurred" xml:space="preserve">
     <value>Um ou mais erros de valização foram detectados.</value>
   </data>
