@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Template.Domain\Template.Core.csproj" />
+    <ProjectReference Include="..\Template.Core\Template.Core.csproj" />
   </ItemGroup>
 
 </Project>

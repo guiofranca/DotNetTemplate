@@ -145,7 +145,7 @@
     <value>Entrou com sucesso</value>
   </data>
   <data name="One or more validation errors occurred" xml:space="preserve">
-    <value>Um ou mais erros de valização foram detectados.</value>
+    <value>Um ou mais erros de validação foram detectados.</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Senha</value>

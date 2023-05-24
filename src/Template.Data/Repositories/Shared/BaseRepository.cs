@@ -44,7 +44,7 @@ public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> whe
     public virtual async Task<T?> FindAsync(Guid id) 
         => await _query.Where(nameof(IModel.Id), id).FirstOrDefaultAsync<T?>();
 
-    public virtual async Task<IEnumerable<T>> FindAllAsync() 
+    public virtual async Task<IEnumerable<T>> FindAllAsync()
         => await _query.GetAsync<T>();
 
     public virtual async Task<IEnumerable<T>> FindAsync(params Guid[] ids) 
@@ -52,6 +52,6 @@ public abstract class BaseRepository<T> : BaseRepository, IBaseRepository<T> whe
 
     public abstract Task<T> UpdateAsync(T t);
 
-    public virtual async Task<bool> DeleteAsync(Guid id)
+    public virtual async Task<bool> DeleteAsync(Guid id) 
         => await _query.Where(nameof(IModel.Id), id).DeleteAsync() > 0;
 }

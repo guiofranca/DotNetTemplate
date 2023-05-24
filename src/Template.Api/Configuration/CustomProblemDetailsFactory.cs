@@ -29,7 +29,7 @@ public class CustomProblemDetailsFactory : ProblemDetailsFactory
         return new(modelStateDictionary)
         {
             Title = title ?? _g["One or more validation errors occurred"],
-            Status = statusCode,
+            Status = 400,
             Type = type,
             Detail = detail,
             Instance = instance
