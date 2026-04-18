@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
-using Microsoft.OpenApi.Models;
-using Template.Api.v1.Controllers.Shared;
-using Template.Api.v2.Controllers;
+using Microsoft.OpenApi;
 
 namespace Template.Api.Configuration;
 
@@ -53,20 +51,7 @@ public static class SwaggerExtensions
             });
 
             // This section allows submitting the token with your request in Swagger.
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
+            options.AddSecurityRequirement(document => new() { [new OpenApiSecuritySchemeReference("Bearer", document)] = [] });
         });
         return builder;
     }

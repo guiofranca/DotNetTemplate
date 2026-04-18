@@ -8,12 +8,12 @@ using Template.Core.Models.Components;
 
 namespace Template.Infrastructure.Cache
 {
-    public class CacheService : ICacheService
+    public class RedisCacheService : ICacheService
     {
         protected readonly IDatabase redis;
         protected readonly TimeSpan _defaultTtl = TimeSpan.FromMinutes(60);
-        protected readonly ILogger<CacheService> _logger;
-        public CacheService(IConfiguration configuration, ILogger<CacheService> logger)
+        protected readonly ILogger<RedisCacheService> _logger;
+        public RedisCacheService(IConfiguration configuration, ILogger<RedisCacheService> logger)
         {
             _logger = logger;
             var connectionString = configuration.GetConnectionString("CacheServer");
@@ -42,7 +42,7 @@ namespace Template.Infrastructure.Cache
         {
             var content = await redis.StringGetAsync(key);
             if (content.IsNull) return null;
-            T? result = JsonSerializer.Deserialize<T?>(content!);
+            T? result = JsonSerializer.Deserialize<T?>((string)content!);
             return result;
         }
 
